@@ -49,25 +49,25 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="_class\HotkeyReg\HotKeys.cs" />
-    <Compile Include="_window\HotkeyReg.cs">
+    <Compile Include="windowClass\HotkeyReg\HotKeys.cs" />
+    <Compile Include="window\HotkeyReg.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="_window\HotkeyReg.Designer.cs">
+    <Compile Include="window\HotkeyReg.Designer.cs">
       <DependentUpon>HotkeyReg.cs</DependentUpon>
     </Compile>
-    <Compile Include="_window\Main.cs">
+    <Compile Include="window\Main.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="_window\Main.Designer.cs">
+    <Compile Include="window\Main.Designer.cs">
       <DependentUpon>Main.cs</DependentUpon>
     </Compile>
     <Compile Include="Properties\Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="_window\HotkeyReg.resx">
+    <EmbeddedResource Include="window\HotkeyReg.resx">
       <DependentUpon>HotkeyReg.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="_window\main.resx">
+    <EmbeddedResource Include="window\main.resx">
       <DependentUpon>Main.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -94,6 +94,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Properties\64.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="class\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

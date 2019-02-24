@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.421
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KeyboardHook", "KeyboardHook\KeyboardHook.csproj", "{EBDFB945-2E0E-48F9-9B41-7FAE6E1364C0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "输入设备钩子", "KeyboardHook\输入设备钩子.csproj", "{EBDFB945-2E0E-48F9-9B41-7FAE6E1364C0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "鼠标按键切换虚拟桌面", "mouseAssist\鼠标按键切换虚拟桌面.csproj", "{AF96E010-CDDF-4A46-8A56-EAA3E1C94302}"
 EndProject

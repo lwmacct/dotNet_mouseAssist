@@ -1,5 +1,4 @@
-﻿//11111111111
-namespace KeyboardHook {
+﻿namespace KeyboardHook {
     partial class Hk_Form {
         /// <summary>
         /// Required designer variable.
@@ -100,7 +99,6 @@ namespace KeyboardHook {
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Hk_Form";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Hk_Form_FormClosed);
-            this.Load += new System.EventHandler(this.Hk_Form_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 
