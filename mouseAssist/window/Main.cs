@@ -13,7 +13,6 @@ namespace app {
 		HotkeyReg hotkeyReg = new HotkeyReg();
 		public Main() {
 			InitializeComponent();
-
 		}
 
 		#region 控件方法

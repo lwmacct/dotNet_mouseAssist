@@ -12,7 +12,6 @@ using KeyboardHook;
 namespace app {
 	public partial class Hk_Form : Form {
 		private InputDevice id = new InputDevice();
-
 		public Hk_Form() {
 			InitializeComponent();
 
