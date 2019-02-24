@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace mouseAssist {
+namespace app {
 	public partial class HotkeyReg : Form {
 		public HotkeyReg() {
 			InitializeComponent();

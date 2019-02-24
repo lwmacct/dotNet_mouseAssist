@@ -1,4 +1,4 @@
-﻿namespace KeyboardHook {
+﻿namespace app {
     partial class Hk_Form {
         /// <summary>
         /// Required designer variable.

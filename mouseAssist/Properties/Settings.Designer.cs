@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace mouseAssist.Properties {
+namespace app.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]

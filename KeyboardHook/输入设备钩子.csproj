@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{EBDFB945-2E0E-48F9-9B41-7FAE6E1364C0}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>KeyboardHook</RootNamespace>
-    <AssemblyName>KeyboardHook</AssemblyName>
+    <RootNamespace>app</RootNamespace>
+    <AssemblyName>app</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -52,11 +52,11 @@
     <Compile Include="window\Main.Designer.cs">
       <DependentUpon>Main.cs</DependentUpon>
     </Compile>
-    <Compile Include="class\Hocy_Hook\Hocy_Hook.cs" />
+    <Compile Include="namespace\KeyboardHook\InputDevice.cs" />
     <Compile Include="Properties\Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="class\Hocy_Hook\public_variable.cs" />
-    <Compile Include="class\Hocy_Hook\Win32API.cs" />
+    <Compile Include="namespace\KeyboardHook\public_variable.cs" />
+    <Compile Include="namespace\KeyboardHook\Win32API.cs" />
     <EmbeddedResource Include="window\Main.resx">
       <DependentUpon>Main.cs</DependentUpon>
     </EmbeddedResource>
@@ -68,6 +68,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -82,8 +83,6 @@
   <ItemGroup>
     <None Include="Properties\App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="windowClass\Main\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

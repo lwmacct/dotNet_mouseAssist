@@ -1,4 +1,4 @@
-﻿namespace mouseAssist {
+﻿namespace app {
 	partial class HotkeyReg {
 		/// <summary>
 		/// Required designer variable.

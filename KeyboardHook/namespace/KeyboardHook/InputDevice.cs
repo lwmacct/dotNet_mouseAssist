@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 using System.Reflection;
 
 namespace KeyboardHook {
-	class Hocy_Hook {
+	class InputDevice {
 		#region 私有常量
 
 		/// <summary>
@@ -289,7 +289,7 @@ namespace KeyboardHook {
 		/// 钩子类
 		/// </summary>
 		/// <remarks>本类仅仅简单实现了 WH_KEYBOARD_LL 以及 WH_MOUSE_LL </remarks>
-		public Hocy_Hook() {
+		public InputDevice() {
 
 			Win32API.GetKeyboardState( this.m_KeyState );
 		}

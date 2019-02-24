@@ -1,4 +1,4 @@
-﻿namespace mouseAssist {
+﻿namespace app {
 	partial class Main {
 		/// <summary>
 		/// 必需的设计器变量。

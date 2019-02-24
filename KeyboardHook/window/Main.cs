@@ -6,23 +6,24 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using System.Threading;
+using KeyboardHook;
 
 
-namespace KeyboardHook {
+namespace app {
 	public partial class Hk_Form : Form {
-		private Hocy_Hook hocy_Hook = new Hocy_Hook();
+		private InputDevice id = new InputDevice();
 
 		public Hk_Form() {
 			InitializeComponent();
 
-			this.hocy_Hook.OnMouseActivity += new MouseEventHandler( hook_MainMouseMove );
-			this.hocy_Hook.OnKeyDown += new KeyEventHandler( hook_MainKeyDown );
-			this.hocy_Hook.OnKeyPress += new KeyPressEventHandler( hook_MainKeyPress );
-			this.hocy_Hook.OnKeyUp += new KeyEventHandler( hook_MainKeyUp );
+			this.id.OnMouseActivity += new MouseEventHandler( hook_MainMouseMove );
+			this.id.OnKeyDown += new KeyEventHandler( hook_MainKeyDown );
+			this.id.OnKeyPress += new KeyPressEventHandler( hook_MainKeyPress );
+			this.id.OnKeyUp += new KeyEventHandler( hook_MainKeyUp );
 
 		}
 		private void Hk_Form_FormClosed(object sender, FormClosedEventArgs e) {
-			this.hocy_Hook.UnInstallHook();
+			this.id.UnInstallHook();
 		}
 		private void HookMain_OnKeyDown(object sender, KeyEventArgs e) {
 			// MessageBox.Show("33");
@@ -32,15 +33,15 @@ namespace KeyboardHook {
 		}
 
 		private void start_Click(object sender, EventArgs e) {
-			hocy_Hook.InstallHook( "1" );
+			id.InstallHook( "1" );
 		}
 
 		private void stop_Click(object sender, EventArgs e) {
-			this.hocy_Hook.UnInstallHook();
+			this.id.UnInstallHook();
 		}
 
 		private void stopkeyboard_Click(object sender, EventArgs e) {
-			hocy_Hook.InstallHook( "2" );
+			id.InstallHook( "2" );
 		}
 
 		private void LogWrite(string txt) {
