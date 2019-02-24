@@ -43,12 +43,12 @@
 			this.contextMenuStrip_tray.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.退出ToolStripMenuItem});
 			this.contextMenuStrip_tray.Name = "contextMenuStrip1";
-			this.contextMenuStrip_tray.Size = new System.Drawing.Size(181, 50);
+			this.contextMenuStrip_tray.Size = new System.Drawing.Size(107, 28);
 			// 
 			// 退出ToolStripMenuItem
 			// 
 			this.退出ToolStripMenuItem.Name = "退出ToolStripMenuItem";
-			this.退出ToolStripMenuItem.Size = new System.Drawing.Size(180, 24);
+			this.退出ToolStripMenuItem.Size = new System.Drawing.Size(106, 24);
 			this.退出ToolStripMenuItem.Text = "退出";
 			this.退出ToolStripMenuItem.Click += new System.EventHandler(this.退出ToolStripMenuItem_Click);
 			// 
