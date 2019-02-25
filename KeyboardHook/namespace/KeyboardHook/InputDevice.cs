@@ -12,7 +12,7 @@ namespace KeyboardHook {
 		/// </summary>
 		private readonly byte[] m_KeyState = new byte[256];
 
-		private string flags;
+		private int flags;
 		//flag=0 正常  flag=1 监控状态  flag=2 屏蔽键盘//
 
 		#endregion 私有常量
@@ -164,9 +164,9 @@ namespace KeyboardHook {
 		private int KeyboardHookProc(int nCode, Int32 wParam, IntPtr lParam) {
 
 			switch (flags) {
-				case "2":
+				case 2:
 					return 1;
-				case "1":
+				case 1:
 					break;
 
 			}
@@ -237,7 +237,7 @@ namespace KeyboardHook {
 		/// 安装钩子
 		/// </summary>
 		/// <returns></returns>
-		public bool InstallHook(string flagsinfo) {
+		public bool InstallHook(int flagsinfo) {
 			this.flags = flagsinfo;
 			IntPtr pInstance = Marshal.GetHINSTANCE( Assembly.GetExecutingAssembly().ManifestModule );
 			//pInstance = (IntPtr)4194304;
