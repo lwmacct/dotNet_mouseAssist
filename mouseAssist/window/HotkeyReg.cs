@@ -1,11 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace app {
@@ -28,7 +21,7 @@ namespace app {
 			Func_hotKeys_unload();
 		}
 		private void HotkeyReg_FormClosing(object sender, FormClosingEventArgs e) {
-			Boolean is_close = true;//是否阻止窗口关闭
+			bool is_close = true;//是否阻止窗口关闭
 			switch (e.CloseReason) {
 				case CloseReason.ApplicationExitCall:
 					Console.WriteLine( "应用程序exit退出" );
@@ -60,7 +53,7 @@ namespace app {
 			if (is_close) {
 				e.Cancel = true;//阻止窗口关闭 
 			}
-			this.WindowState = FormWindowState.Minimized;//最小化
+			WindowState = FormWindowState.Minimized;//最小化
 		}
 		#endregion 控件方法
 
@@ -74,10 +67,10 @@ namespace app {
 		private void Func_hotKeys_reg() {
 			//注册Ctrl + Shift + Alt + Left 快捷键
 			//注册Ctrl + Shift + Alt + Right 快捷键
-			Boolean is_leftDesktop = false;//默认为失败
-			Boolean is_rightDesktop = false;//默认为失败
-			is_leftDesktop = h.Regist( this.Handle, HotKeys.keys_Control + HotKeys.keys_Shift, Keys.Subtract, Func_left_callBack );
-			is_rightDesktop = h.Regist( this.Handle, HotKeys.keys_Control + HotKeys.keys_Shift, Keys.Add, Func_right_callBack );
+			bool is_leftDesktop = false;//默认为失败
+			bool is_rightDesktop = false;//默认为失败
+			is_leftDesktop = h.Regist( Handle, HotKeys.keys_Control + HotKeys.keys_Shift, Keys.Subtract, Func_left_callBack );
+			is_rightDesktop = h.Regist( Handle, HotKeys.keys_Control + HotKeys.keys_Shift, Keys.Add, Func_right_callBack );
 			if (is_leftDesktop && is_rightDesktop) {
 				Console.WriteLine( "注册热键成功" );
 			} else {
@@ -88,10 +81,10 @@ namespace app {
 		/// 卸载热键
 		/// </summary>
 		private void Func_hotKeys_unload() {
-			Boolean is_leftDesktop = false;//默认为失败
-			Boolean is_rightDesktop = false;//默认为失败
-			is_leftDesktop = h.UnRegist( this.Handle, Func_left_callBack );//卸载
-			is_rightDesktop = h.UnRegist( this.Handle, Func_right_callBack );
+			bool is_leftDesktop = false;//默认为失败
+			bool is_rightDesktop = false;//默认为失败
+			is_leftDesktop = h.UnRegist( Handle, Func_left_callBack );//卸载
+			is_rightDesktop = h.UnRegist( Handle, Func_right_callBack );
 			if (is_leftDesktop && is_rightDesktop) {
 				Console.WriteLine( "注册热键成功" );
 			} else {

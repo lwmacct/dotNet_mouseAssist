@@ -13,16 +13,12 @@ namespace app {
 		HotkeyReg hotkeyReg = new HotkeyReg();
 		public Main() {
 			InitializeComponent();
-		}
-
-		#region 控件方法
-
-
-		private void Main_Load(object sender, EventArgs e) {
 			hotkeyReg.Show();
 			//hotkeyReg.Hide();
 			//this.Hide();
 		}
+
+		#region 控件方法
 		private void 退出ToolStripMenuItem_Click(object sender, EventArgs e) {
 			//关闭窗口产考 https://www.cnblogs.com/testsec/p/6142752.html
 			Application.Exit();
