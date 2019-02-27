@@ -9,7 +9,7 @@ namespace app {
 		#region 控件方法
 		private void HotkeyReg_Load(object sender, EventArgs e) {
 			//Btn_hotkeyReg_Click( null, EventArgs.Empty );
-			btn_hotkeyReg.PerformClick();//模拟点击  //this.WindowState = FormWindowState.Maximized;
+			btn_hotkeyReg.PerformClick();//模拟点击 
 
 		}
 

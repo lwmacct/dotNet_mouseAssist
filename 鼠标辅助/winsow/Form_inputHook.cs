@@ -13,26 +13,25 @@ using System.Runtime.InteropServices;
 namespace app {
 
 	public partial class Form_inputHook : Form {
-		/// <summary>
-		/// 热键状态
-		/// </summary>
+
 		private HotKeyState HKS = new HotKeyState();
 		private InputDevice inputDevice = new InputDevice();
 		public Form_inputHook() {
 			InitializeComponent();
-			//inputDevice.OnMouseActivity += new MouseEventHandler( hook_MainMouseMove );
-			//inputDevice.OnKeyDown += new KeyEventHandler( hook_MainKeyDown );
-			//inputDevice.OnKeyUp += new KeyEventHandler( hook_MainKeyUp );
-
 			//把按下和弹起加入热键状态方法,以便更新组合键母键状态
 			inputDevice.OnMouseActivity += new MouseEventHandler( HKS.CallBack_MouseMove );
 			inputDevice.OnKeyDown += new KeyEventHandler( HKS.CallBack_KeyDown );
 			inputDevice.OnKeyUp += new KeyEventHandler( HKS.CallBack_KeyUp );
 			HKS.Event_Keys += new HotKeyState.d_KeysEvent( KeyDown_And_KeyUp );
 			HKS.Event_Mouse += new HotKeyState.d_MouseEvent( MouseEventHandler );
+
 			//this.inputDevice.OnKeyPress += new KeyPressEventHandler( hook_MainKeyPress );//这个接口有点问题,控制台提示程序错误,但不停止运行
 		}
-		private void Form_inputHook_Load(object sender, EventArgs e) {/*点击主窗口*/ }
+
+		private void Form_inputHook_Load(object sender, EventArgs e) {/*点击主窗口*/
+			button_start.PerformClick();//模拟点击 开始监控 //Button_Click( null, EventArgs.Empty );
+										
+		}
 		/// <summary>
 		/// 所有 Button 点击事件 都填这个方法,集中处理
 		/// </summary>
@@ -52,6 +51,7 @@ namespace app {
 					break;
 				case "button_truncate"://清空按钮
 					textBox_resultinfo.Text = "";
+					textBox_windowInfo.Text = "";
 					break;
 				case "button_unitTest"://单元测试
 					UnitTest();
@@ -73,19 +73,34 @@ namespace app {
 
 		}
 
-		private void UnitTest() {
-			Console.WriteLine( HKS.Get_MousePositionInfo() );
-
+		private void UnitTest()
+		{
+			for (int i = 0; i < HKS.inputRecord.Length; i++)
+			{
+			 Console.WriteLine(HKS.inputRecord[i]);	
+			}
+			
 		}
+		
 
 		//按键事件处理
-		public void KeyDown_And_KeyUp(string sender, KeyEventArgs key) {
+		public void KeyDown_And_KeyUp(string Sender, KeyEventArgs key) {
 			//只有窗口是正常状态才调试输出
 			if (WindowState == FormWindowState.Normal) {
-				LogWrite( sender + "\t" + key.ToString() );
+				var v = new {
+					key.KeyValue,
+					key.KeyCode,
+					key.Modifiers,
+					key.SuppressKeyPress
+				};
+				LogWrite( Sender + "\t" + v );
 				Set_HotKeyState();
 			}
 
+			if (key.KeyCode == Keys.RMenu && Sender==HotKeyState.KeyDown) {
+				Tuple<IntPtr, StringBuilder, StringBuilder> MousePositionInfo = HKS.Get_MousePositionInfo();
+				SetFrom_textBox_windowInfo( MousePositionInfo.ToString() );
+			}
 
 		}
 		//鼠标事件处理
@@ -96,8 +111,8 @@ namespace app {
 				if (e.Clicks > 0) {
 					LogWrite( "MouseButton\t" + e.Button.ToString() );
 				}
-				Tuple<IntPtr, StringBuilder, StringBuilder> MousePositionInfo = HKS.Get_MousePositionInfo();
-				SetFrom_textBox_windowInfo( MousePositionInfo.ToString() );
+				//Tuple<IntPtr, StringBuilder, StringBuilder> MousePositionInfo = HKS.Get_MousePositionInfo();
+				//SetFrom_textBox_windowInfo( MousePositionInfo.ToString() );
 			}
 		}
 

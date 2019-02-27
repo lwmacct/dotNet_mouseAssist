@@ -5,6 +5,9 @@ using System.Text;
 using System.Runtime.InteropServices;
 using System.Drawing;
 namespace app {
+	/// <summary>
+	/// 热键状态
+	/// </summary>
 	class HotKeyState {
 		#region 导入 DLL
 		/// <summary>
@@ -58,35 +61,48 @@ namespace app {
 		public event d_MouseEvent Event_Mouse;
 
 		#region 公有变量
+
 		/// <summary>
-		/// 鼠标所在窗口句柄
+		/// 按键按下
 		/// </summary>
-		public IntPtr mouse_location_hWnd;
+		public const string KeyDown = "KeyDown";
 		/// <summary>
-		/// 鼠标所在窗口标题
+		/// 按键弹起
 		/// </summary>
-		public StringBuilder mouse_location_title;
+		public const string KeyUp = "KeyUp";
 		/// <summary>
-		/// 鼠标所在窗口类名
+		/// 输入记录
 		/// </summary>
-		public StringBuilder mouse_location_className;
+		public Keys[] inputRecord = new Keys[10];
 
 		#endregion
 		/// <summary>
 		/// 鼠标坐标
 		/// </summary>
 		private Point MousePosition;
-
+		//设置上一次按下的键,最多保存10条记录
+		private void Set_inputRecord(Keys KeyCode) {
+			//数组后移
+			for (int i = inputRecord.Length - 1; i >= 0; i--) {
+				if (i - 1 >= 0) {
+					inputRecord[i] = inputRecord[i - 1];
+				}
+			}
+			//设置第一个值为最新值
+			inputRecord[0] = KeyCode;
+		}
 		#region 公有方法
 		//按下处理
 		public void CallBack_KeyDown(object sender, KeyEventArgs key) {
 			this.keyStateAll[key.KeyCode] = true;//设置按键状态
-			Event_Keys( "KeyDown", key );//发表事件
+			Set_inputRecord( key.KeyCode );
+
+			Event_Keys( KeyDown, key );//发表事件
 		}
 		//弹起处理
 		public void CallBack_KeyUp(object sender, KeyEventArgs key) {
 			this.keyStateAll[key.KeyCode] = false;//设置按键状态
-			Event_Keys( "KeyUp", key );//发表事件
+			Event_Keys( KeyUp, key );//发表事件
 		}
 		//鼠标处理
 		public void CallBack_MouseMove(object sender, MouseEventArgs e) {
