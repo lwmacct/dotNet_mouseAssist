@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{AF96E010-CDDF-4A46-8A56-EAA3E1C94302}</ProjectGuid>
+    <ProjectGuid>{5A70F50F-C4E3-454F-A5B6-8B074CC4ACF3}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>app</RootNamespace>
     <AssemblyName>app</AssemblyName>
@@ -32,9 +32,6 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup>
-    <ApplicationIcon>Properties\64.ico</ApplicationIcon>
-  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -49,27 +46,31 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="windowClass\HotkeyReg\HotKeys.cs" />
-    <Compile Include="window\Form_hotKeyReg.cs">
+    <Compile Include="namespace\KeyboardHook\InputDevice.cs" />
+    <Compile Include="namespace\KeyboardHook\public_variable.cs" />
+    <Compile Include="namespace\KeyboardHook\Win32API.cs" />
+    <Compile Include="windowClass\Form_hotKeyReg\HotKeys.cs" />
+    <Compile Include="windowClass\Form_inputHook\Hoock_CallBack.cs" />
+    <Compile Include="winsow\Form_hotKeyReg.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="window\Form_hotKeyReg.Designer.cs">
+    <Compile Include="winsow\Form_hotKeyReg.Designer.cs">
       <DependentUpon>Form_hotKeyReg.cs</DependentUpon>
     </Compile>
-    <Compile Include="window\Main.cs">
+    <Compile Include="winsow\Form_inputHook.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="window\Main.Designer.cs">
+    <Compile Include="winsow\Form_inputHook.Designer.cs">
+      <DependentUpon>Form_inputHook.cs</DependentUpon>
+    </Compile>
+    <Compile Include="winsow\Main.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="winsow\Main.Designer.cs">
       <DependentUpon>Main.cs</DependentUpon>
     </Compile>
     <Compile Include="Properties\Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="window\Form_hotKeyReg.resx">
-      <DependentUpon>Form_hotKeyReg.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="window\main.resx">
-      <DependentUpon>Main.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -80,6 +81,15 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="winsow\Form_hotKeyReg.resx">
+      <DependentUpon>Form_hotKeyReg.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="winsow\Form_inputHook.resx">
+      <DependentUpon>Form_inputHook.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="winsow\main.resx">
+      <DependentUpon>Main.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -93,11 +103,6 @@
   <ItemGroup>
     <None Include="Properties\App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Content Include="Properties\64.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="namespace\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

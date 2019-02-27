@@ -10,10 +10,10 @@ using System.Windows.Forms;
 
 namespace app {
 	public partial class Main : Form {
-		HotkeyReg hotkeyReg = new HotkeyReg();
+		Form_hotKeyReg fhkr = new Form_hotKeyReg();//new 一个热键注册窗口
 		public Main() {
 			InitializeComponent();
-			hotkeyReg.Show();
+			fhkr.Show();//显示
 			//hotkeyReg.Hide();
 			//this.Hide();
 		}

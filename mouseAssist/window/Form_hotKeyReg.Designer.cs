@@ -1,5 +1,5 @@
 ﻿namespace app {
-	partial class HotkeyReg {
+	partial class Form_hotKeyReg {
 		/// <summary>
 		/// Required designer variable.
 		/// </summary>
@@ -60,7 +60,7 @@
 			this.btn_hotkeyReg.UseVisualStyleBackColor = true;
 			this.btn_hotkeyReg.Click += new System.EventHandler(this.Btn_hotkeyReg_Click);
 			// 
-			// HotkeyReg
+			// Form_hotKeyReg
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
@@ -68,10 +68,10 @@
 			this.Controls.Add(this.panel_btnAll);
 			this.ImeMode = System.Windows.Forms.ImeMode.On;
 			this.MaximizeBox = false;
-			this.Name = "HotkeyReg";
+			this.Name = "Form_hotKeyReg";
 			this.ShowInTaskbar = false;
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-			this.Text = "HotkeyReg";
+			this.Text = "热键注册";
 			this.WindowState = System.Windows.Forms.FormWindowState.Minimized;
 			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.HotkeyReg_FormClosing);
 			this.Load += new System.EventHandler(this.HotkeyReg_Load);

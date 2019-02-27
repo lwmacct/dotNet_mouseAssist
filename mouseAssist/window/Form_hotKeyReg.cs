@@ -2,8 +2,8 @@
 using System.Windows.Forms;
 
 namespace app {
-	public partial class HotkeyReg : Form {
-		public HotkeyReg() {
+	public partial class Form_hotKeyReg : Form {
+		public Form_hotKeyReg() {
 			InitializeComponent();
 		}
 		#region 控件方法
