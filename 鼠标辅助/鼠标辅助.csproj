@@ -50,7 +50,7 @@
     <Compile Include="namespace\KeyboardHook\public_variable.cs" />
     <Compile Include="namespace\KeyboardHook\Win32API.cs" />
     <Compile Include="windowClass\Form_hotKeyReg\HotKeys.cs" />
-    <Compile Include="windowClass\Form_inputHook\Hoock_CallBack.cs" />
+    <Compile Include="windowClass\Form_inputHook\HotKeyState.cs" />
     <Compile Include="winsow\Form_hotKeyReg.cs">
       <SubType>Form</SubType>
     </Compile>

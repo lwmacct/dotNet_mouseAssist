@@ -8,19 +8,31 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using KeyboardHook;
+using System.Runtime.InteropServices;
 
 namespace app {
-	public partial class Form_inputHook : Form {
-		private InputDevice id = new InputDevice();
-		private Hoock_CallBack HC = new Hoock_CallBack();
 
+	public partial class Form_inputHook : Form {
+		/// <summary>
+		/// 热键状态
+		/// </summary>
+		private HotKeyState HKS = new HotKeyState();
+		private InputDevice inputDevice = new InputDevice();
 		public Form_inputHook() {
 			InitializeComponent();
-			id.OnMouseActivity += new MouseEventHandler( hook_MainMouseMove );
-			id.OnKeyDown += new KeyEventHandler( hook_MainKeyDown );
-			id.OnKeyUp += new KeyEventHandler( hook_MainKeyUp );
-			//this.id.OnKeyPress += new KeyPressEventHandler( hook_MainKeyPress );//这个接口有点问题,控制台提示程序错误,但不停止运行
+			//inputDevice.OnMouseActivity += new MouseEventHandler( hook_MainMouseMove );
+			//inputDevice.OnKeyDown += new KeyEventHandler( hook_MainKeyDown );
+			//inputDevice.OnKeyUp += new KeyEventHandler( hook_MainKeyUp );
+
+			//把按下和弹起加入热键状态方法,以便更新组合键母键状态
+			inputDevice.OnMouseActivity += new MouseEventHandler( HKS.CallBack_MouseMove );
+			inputDevice.OnKeyDown += new KeyEventHandler( HKS.CallBack_KeyDown );
+			inputDevice.OnKeyUp += new KeyEventHandler( HKS.CallBack_KeyUp );
+			HKS.Event_Keys += new HotKeyState.d_KeysEvent( KeyDown_And_KeyUp );
+			HKS.Event_Mouse += new HotKeyState.d_MouseEvent( MouseEventHandler );
+			//this.inputDevice.OnKeyPress += new KeyPressEventHandler( hook_MainKeyPress );//这个接口有点问题,控制台提示程序错误,但不停止运行
 		}
+		private void Form_inputHook_Load(object sender, EventArgs e) {/*点击主窗口*/ }
 		/// <summary>
 		/// 所有 Button 点击事件 都填这个方法,集中处理
 		/// </summary>
@@ -29,75 +41,83 @@ namespace app {
 		private void Button_Click(object sender, EventArgs e) {
 			Button btn = (Button)sender;
 			switch (btn.Name) {
-				case "button_start":
-					id.InstallHook( 1 );
+				case "button_start"://开始监控
+					inputDevice.InstallHook( 1 );
 					break;
-				case "button_stop":
-					id.UnInstallHook();
+				case "button_stop"://停止监控
+					inputDevice.UnInstallHook();
 					break;
-				case "button_stopkeyboard":
-					id.InstallHook( 2 );
+				case "button_stopkeyboard"://屏蔽键盘
+					inputDevice.InstallHook( 2 );
+					break;
+				case "button_truncate"://清空按钮
+					textBox_resultinfo.Text = "";
+					break;
+				case "button_unitTest"://单元测试
+					UnitTest();
+					break;
+				case "button_setTopTier"://窗口置顶
+					if (btn.Text == "窗口置顶") {
+						this.TopMost = true;
+						btn.Text = "取消置顶";
+					} else {
+						this.TopMost = false;
+						btn.Text = "窗口置顶";
+					}
+
 					break;
 				default:
 					Console.WriteLine( "按钮方法未定义" );
 					break;
-			}
+			}//
 
 		}
 
-		//写出数据
+		private void UnitTest() {
+			Console.WriteLine( HKS.Get_MousePositionInfo() );
+
+		}
+
+		//按键事件处理
+		public void KeyDown_And_KeyUp(string sender, KeyEventArgs key) {
+			//只有窗口是正常状态才调试输出
+			if (WindowState == FormWindowState.Normal) {
+				LogWrite( sender + "\t" + key.ToString() );
+				Set_HotKeyState();
+			}
+
+
+		}
+		//鼠标事件处理
+		public void MouseEventHandler(MouseEventArgs e) {
+			//只有窗口是正常状态才调试输出
+			if (WindowState == FormWindowState.Normal) {
+				label_MousePosition.Text = string.Format( "x={0}  y={1} wheel={2}", e.X, e.Y, e.Delta );
+				if (e.Clicks > 0) {
+					LogWrite( "MouseButton\t" + e.Button.ToString() );
+				}
+				Tuple<IntPtr, StringBuilder, StringBuilder> MousePositionInfo = HKS.Get_MousePositionInfo();
+				SetFrom_textBox_windowInfo( MousePositionInfo.ToString() );
+			}
+		}
+
+		//按键事件写出数据到文本框
 		private void LogWrite(string txt) {
-			resultinfo.AppendText( txt + Environment.NewLine );
-			resultinfo.SelectionStart = resultinfo.Text.Length;
+			textBox_resultinfo.AppendText( txt + Environment.NewLine );
+			textBox_resultinfo.SelectionStart = textBox_resultinfo.Text.Length;
 		}
-		//按下处理
-		private void hook_MainKeyDown(object sender, KeyEventArgs e) {
-			var v = new {
-				e.KeyCode,
-				e.KeyValue,
-				e.Alt,
-				e.Control,
-				e.Handled,
-				e.KeyData,
-				e.Modifiers,
-				e.Shift,
-				e.SuppressKeyPress
-			};
-			Console.WriteLine( v );
-			LogWrite( "KeyDown " + v );
+		//鼠标所在窗口信息
+		private void SetFrom_textBox_windowInfo(string txt) {
+			textBox_windowInfo.AppendText( txt + Environment.NewLine );
+			textBox_windowInfo.SelectionStart = textBox_windowInfo.Text.Length;
 		}
-		//弹起处理
-		private void hook_MainKeyUp(object sender, KeyEventArgs e) {
-			var v = new {
-				e.KeyCode,
-				e.KeyValue,
-				e.Alt,
-				e.Control,
-				e.Handled,
-				e.KeyData,
-				e.Modifiers,
-				e.Shift,
-				e.SuppressKeyPress
-			};
-			Console.WriteLine( sender );
-			LogWrite( "KeyUp " + v );
-		}
-		//这个事件不好用
-		private void hook_MainKeyPress(object sender, KeyPressEventArgs e) {
-			LogWrite( "KeyPress 	- " + e.KeyChar );
+		//显示热键母键状态
+		private void Set_HotKeyState() {
+			lable_state_Alt.Text = "Alt 键状态 " + HKS.keyStateAll[Keys.LMenu];
+			lable_state_Ctrl.Text = "Ctrl 键状态 " + HKS.keyStateAll[Keys.LControlKey];
+			lable_state_Shift.Text = "Shift 键状态 " + HKS.keyStateAll[Keys.LShiftKey];
 		}
 
-		//鼠标移动处理
-		private void hook_MainMouseMove(object sender, MouseEventArgs e) {
-			label_MousePosition.Text = string.Format( "x={0}  y={1} wheel={2}", e.X, e.Y, e.Delta );
-			if (e.Clicks > 0) {
-				LogWrite( "MouseButton 	- " + e.Button.ToString() );
-			}
-		}
-
-		private void Form_inputHook_Load(object sender, EventArgs e) {
-
-		}
 
 
 	}
