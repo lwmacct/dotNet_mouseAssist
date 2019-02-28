@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using KeyboardHook;
 using System.Runtime.InteropServices;
+using inputAssist;
+using System.Threading;
 
 namespace app {
 
@@ -30,7 +32,7 @@ namespace app {
 
 		private void Form_inputHook_Load(object sender, EventArgs e) {/*点击主窗口*/
 			button_start.PerformClick();//模拟点击 开始监控 //Button_Click( null, EventArgs.Empty );
-										
+
 		}
 		/// <summary>
 		/// 所有 Button 点击事件 都填这个方法,集中处理
@@ -73,18 +75,17 @@ namespace app {
 
 		}
 
-		private void UnitTest()
-		{
-			for (int i = 0; i < HKS.inputRecord.Length; i++)
-			{
-			 Console.WriteLine(HKS.inputRecord[i]);	
-			}
-			
+		private void UnitTest() {
+
+			Console.WriteLine((int)Convert.ToByte( 'a'.ToString().ToUpper().ToCharArray()[0]));
+
 		}
-		
 
 		//按键事件处理
 		public void KeyDown_And_KeyUp(string Sender, KeyEventArgs key) {
+			if (Sender == HotKeyState.KeyDown) {//使用多线程进行输入辅助处理,不影响主线程
+				new MultiThreadInputAssist( HKS );
+			}
 			//只有窗口是正常状态才调试输出
 			if (WindowState == FormWindowState.Normal) {
 				var v = new {
@@ -97,9 +98,12 @@ namespace app {
 				Set_HotKeyState();
 			}
 
-			if (key.KeyCode == Keys.RMenu && Sender==HotKeyState.KeyDown) {
+			textBox_foregroundWindowInfo.Text = HKS.foregroundWindowInfo.MytoString();
+			//label_foregroundWindow.Text = HKS.foregroundWindowInfo.MytoString();
+			if (key.KeyCode == Keys.RMenu && Sender == HotKeyState.KeyDown) {
 				Tuple<IntPtr, StringBuilder, StringBuilder> MousePositionInfo = HKS.Get_MousePositionInfo();
 				SetFrom_textBox_windowInfo( MousePositionInfo.ToString() );
+
 			}
 
 		}

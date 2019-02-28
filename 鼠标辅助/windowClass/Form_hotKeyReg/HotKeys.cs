@@ -129,7 +129,7 @@ public class HotKeys {
 	[DllImport( "user32.dll" )]
 	static extern bool UnregisterHotKey(IntPtr hWnd, int id);
 	/// <summary>
-	/// 导入模拟键盘的方法
+	/// 模拟键盘的方法
 	/// </summary>
 	/// <param name="bVk" >按键的虚拟键值</param>
 	/// <param name= "bScan" >扫描码，一般不用设置，用0代替就行</param>

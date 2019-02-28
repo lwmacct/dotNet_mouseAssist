@@ -9,32 +9,33 @@ namespace app {
 	/// 热键状态
 	/// </summary>
 	class HotKeyState {
+
 		#region 导入 DLL
 		/// <summary>
 		/// 获取窗口标题
 		/// </summary>
-		/// <param name="hWnd"></param>
-		/// <param name="lpString"></param>
-		/// <param name="nMaxCount"></param>
+		/// <param name="hWnd">窗口句柄</param>
+		/// <param name="lpString">标题</param>
+		/// <param name="nMaxCount">最大值</param>
 		/// <returns></returns>
 		[DllImport( "user32", SetLastError = true )]
-		private static extern int GetWindowText(
-			IntPtr hWnd,//窗口句柄
-			StringBuilder lpString,//标题
-			int nMaxCount //最大值
+		public static extern int GetWindowText(
+			IntPtr hWnd,
+			StringBuilder lpString,
+			int nMaxCount
 		);
 		/// <summary>
 		/// 获取类的名字
 		/// </summary>
-		/// <param name="hWnd"></param>
-		/// <param name="lpString"></param>
+		/// <param name="hWnd">句柄</param>
+		/// <param name="lpString">类名</param>
 		/// <param name="nMaxCount"></param>
-		/// <returns></returns>
+		/// <returns>最大值</returns>
 		[DllImport( "user32.dll" )]
-		private static extern int GetClassName(
-			IntPtr hWnd,//句柄
-			StringBuilder lpString, //类名
-			int nMaxCount //最大值
+		public static extern int GetClassName(
+			IntPtr hWnd,
+			StringBuilder lpString,
+			int nMaxCount
 		);
 
 		/// <summary>
@@ -43,10 +44,65 @@ namespace app {
 		/// <param name="Point">坐标</param>
 		/// <returns></returns>
 		[DllImport( "user32" )]
-		private static extern IntPtr WindowFromPoint(
+		public static extern IntPtr WindowFromPoint(
 			Point Point
 		);
+		/// <summary>
+		/// 获取前台窗口句柄
+		/// </summary>
+		/// <returns></returns>
+		[DllImport( "user32.dll", CharSet = CharSet.Auto, ExactSpelling = true )]
+		public static extern IntPtr GetForegroundWindow();
+		/// <summary>
+		/// 模拟键盘的方法
+		/// </summary>
+		/// <param name="bVk" >按键的虚拟键值</param>
+		/// <param name= "bScan" >扫描码，一般不用设置，用0代替就行</param>
+		/// <param name= "dwFlags" >选项标志：0：表示按下，2：表示松开</param>
+		/// <param name= "dwExtraInfo">一般设置为0</param>
+		[DllImport( "user32.dll" )]
+		public static extern void keybd_event(byte bVk, byte bScan, int dwFlags, int dwExtraInfo);
+
 		#endregion
+
+		#region 子类
+		/// <summary>
+		/// 前台窗口信息类
+		/// </summary>
+		public class ForegroundWindowInfo {
+			/// <summary>
+			/// 句柄
+			/// </summary>
+			public IntPtr IntPtr;
+			/// <summary>
+			/// 标题
+			/// </summary>
+			public StringBuilder title = new StringBuilder( 256 );
+			/// <summary>
+			/// 类名
+			/// </summary>
+			public StringBuilder className = new StringBuilder( 256 );
+
+			//public string toString;
+			public ForegroundWindowInfo() {
+				this.IntPtr = GetForegroundWindow();//得到窗口句柄
+				GetWindowText( this.IntPtr, this.title, this.title.Capacity );//得到窗口的标题
+				GetClassName( this.IntPtr, this.className, this.className.Capacity );//得到窗口的类名
+
+			}
+
+			public string MytoString() {
+				return new {
+					this.IntPtr,
+					this.title,
+					this.className
+				}.ToString();
+			}
+		}
+
+		#endregion 子类
+
+
 
 		/// <summary>
 		/// 按键状态集合
@@ -74,12 +130,16 @@ namespace app {
 		/// 输入记录
 		/// </summary>
 		public Keys[] inputRecord = new Keys[10];
-
+		/// <summary>
+		/// 前台窗口信息
+		/// </summary>
+		public ForegroundWindowInfo foregroundWindowInfo;
 		#endregion
 		/// <summary>
 		/// 鼠标坐标
 		/// </summary>
-		private Point MousePosition;
+		public Point MousePosition;
+
 		//设置上一次按下的键,最多保存10条记录
 		private void Set_inputRecord(Keys KeyCode) {
 			//数组后移
@@ -95,8 +155,8 @@ namespace app {
 		//按下处理
 		public void CallBack_KeyDown(object sender, KeyEventArgs key) {
 			this.keyStateAll[key.KeyCode] = true;//设置按键状态
-			Set_inputRecord( key.KeyCode );
-
+			Set_inputRecord( key.KeyCode );//设置输入记录
+			this.foregroundWindowInfo = new ForegroundWindowInfo();//设置前台窗口信息
 			Event_Keys( KeyDown, key );//发表事件
 		}
 		//弹起处理
@@ -109,6 +169,7 @@ namespace app {
 			MousePosition = e.Location;//保存鼠标位置
 			Event_Mouse( e );//发表事件
 		}
+
 		/// <summary>
 		/// 获取鼠标所在位置窗口信息
 		/// </summary>
