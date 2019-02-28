@@ -4,11 +4,11 @@ using System.Collections.Generic;
 using System.Text;
 using System.Runtime.InteropServices;
 using System.Drawing;
-namespace app {
+namespace inputAssist {
 	/// <summary>
 	/// 热键状态
 	/// </summary>
-	class HotKeyState {
+	public class HotKeyState {
 
 		#region 导入 DLL
 		/// <summary>
@@ -76,7 +76,7 @@ namespace app {
 			public IntPtr IntPtr;
 			/// <summary>
 			/// 标题
-			/// </summary>
+			/// </summary>StringBuilder
 			public StringBuilder title = new StringBuilder( 256 );
 			/// <summary>
 			/// 类名
@@ -88,7 +88,6 @@ namespace app {
 				this.IntPtr = GetForegroundWindow();//得到窗口句柄
 				GetWindowText( this.IntPtr, this.title, this.title.Capacity );//得到窗口的标题
 				GetClassName( this.IntPtr, this.className, this.className.Capacity );//得到窗口的类名
-
 			}
 
 			public string MytoString() {
@@ -99,17 +98,30 @@ namespace app {
 				}.ToString();
 			}
 		}
+		public enum Em {
+			/// <summary>
+			/// 按键按下
+			/// </summary>
+			KeyDown,
+			/// <summary>
+			/// 按键弹起
+			/// </summary>
+			KeyUp
+		}
 
 		#endregion 子类
 
-
-
-		/// <summary>
-		/// 按键状态集合
-		/// </summary>
-		public Dictionary<Keys, Boolean> keyStateAll = new Dictionary<Keys, Boolean>();
 		//事件委托
-		public delegate void d_KeysEvent(string KeyDown_And_KeyUp, KeyEventArgs key);
+		/// <summary>
+		/// 按下或者弹起某键
+		/// </summary>
+		/// <param name="KeyDown_And_KeyUp">按下或弹起,枚举Em</param>
+		/// <param name="key"></param>
+		public delegate void d_KeysEvent(Em KeyDown_And_KeyUp, KeyEventArgs key);
+		/// <summary>
+		/// 鼠标事件
+		/// </summary>
+		/// <param name="e"></param>
 		public delegate void d_MouseEvent(MouseEventArgs e);
 
 		//事件事件
@@ -117,52 +129,37 @@ namespace app {
 		public event d_MouseEvent Event_Mouse;
 
 		#region 公有变量
-
-		/// <summary>
-		/// 按键按下
-		/// </summary>
-		public const string KeyDown = "KeyDown";
-		/// <summary>
-		/// 按键弹起
-		/// </summary>
-		public const string KeyUp = "KeyUp";
-		/// <summary>
-		/// 输入记录
-		/// </summary>
-		public Keys[] inputRecord = new Keys[10];
+		public Keys[] inputRecord = new Keys[5];
 		/// <summary>
 		/// 前台窗口信息
 		/// </summary>
 		public ForegroundWindowInfo foregroundWindowInfo;
-		#endregion
+		/// <summary>
+		/// 按键状态集合
+		/// </summary>
+		public Dictionary<Keys, Boolean> keyStateAll = new Dictionary<Keys, Boolean>();
 		/// <summary>
 		/// 鼠标坐标
 		/// </summary>
 		public Point MousePosition;
+		/// <summary>
+		/// 是否正在模拟(防止嵌套模拟造成死循环循环)
+		/// </summary>
+		public Boolean is_simulated = false;
+		#endregion
 
-		//设置上一次按下的键,最多保存10条记录
-		private void Set_inputRecord(Keys KeyCode) {
-			//数组后移
-			for (int i = inputRecord.Length - 1; i >= 0; i--) {
-				if (i - 1 >= 0) {
-					inputRecord[i] = inputRecord[i - 1];
-				}
-			}
-			//设置第一个值为最新值
-			inputRecord[0] = KeyCode;
-		}
 		#region 公有方法
 		//按下处理
 		public void CallBack_KeyDown(object sender, KeyEventArgs key) {
 			this.keyStateAll[key.KeyCode] = true;//设置按键状态
 			Set_inputRecord( key.KeyCode );//设置输入记录
 			this.foregroundWindowInfo = new ForegroundWindowInfo();//设置前台窗口信息
-			Event_Keys( KeyDown, key );//发表事件
+			Event_Keys( Em.KeyDown, key );//发表事件
 		}
 		//弹起处理
 		public void CallBack_KeyUp(object sender, KeyEventArgs key) {
 			this.keyStateAll[key.KeyCode] = false;//设置按键状态
-			Event_Keys( KeyUp, key );//发表事件
+			Event_Keys( Em.KeyUp, key );//发表事件
 		}
 		//鼠标处理
 		public void CallBack_MouseMove(object sender, MouseEventArgs e) {
@@ -188,6 +185,17 @@ namespace app {
 
 		#region 私有方法
 
+		//设置上一次按下的键,最多保存5条记录
+		private void Set_inputRecord(Keys KeyCode) {
+			//数组后移
+			for (int i = inputRecord.Length - 1; i >= 0; i--) {
+				if (i - 1 >= 0) {
+					inputRecord[i] = inputRecord[i - 1];
+				}
+			}
+			//设置第一个值为最新值
+			inputRecord[0] = KeyCode;
+		}
 
 		#endregion 私有方法
 

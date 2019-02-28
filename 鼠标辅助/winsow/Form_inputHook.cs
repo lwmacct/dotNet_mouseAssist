@@ -15,22 +15,31 @@ using System.Threading;
 namespace app {
 
 	public partial class Form_inputHook : Form {
-
 		private HotKeyState HKS = new HotKeyState();
 		private InputDevice inputDevice = new InputDevice();
 		public Form_inputHook() {
 			InitializeComponent();
+
+			#region init 窗口
+			this.ShowInTaskbar = false;
+			this.WindowState = FormWindowState.Minimized;
+			#endregion
 			//把按下和弹起加入热键状态方法,以便更新组合键母键状态
 			inputDevice.OnMouseActivity += new MouseEventHandler( HKS.CallBack_MouseMove );
 			inputDevice.OnKeyDown += new KeyEventHandler( HKS.CallBack_KeyDown );
 			inputDevice.OnKeyUp += new KeyEventHandler( HKS.CallBack_KeyUp );
 			HKS.Event_Keys += new HotKeyState.d_KeysEvent( KeyDown_And_KeyUp );
 			HKS.Event_Mouse += new HotKeyState.d_MouseEvent( MouseEventHandler );
-
 			//this.inputDevice.OnKeyPress += new KeyPressEventHandler( hook_MainKeyPress );//这个接口有点问题,控制台提示程序错误,但不停止运行
+
 		}
+		
+		/// <summary>
+		/// 初始化控件属性
+		/// </summary>
 
 		private void Form_inputHook_Load(object sender, EventArgs e) {/*点击主窗口*/
+
 			button_start.PerformClick();//模拟点击 开始监控 //Button_Click( null, EventArgs.Empty );
 
 		}
@@ -76,35 +85,40 @@ namespace app {
 		}
 
 		private void UnitTest() {
-
-			Console.WriteLine((int)Convert.ToByte( 'a'.ToString().ToUpper().ToCharArray()[0]));
-
+			Console.WriteLine( (int)Convert.ToByte( 'a'.ToString().ToUpper().ToCharArray()[0] ) );
 		}
 
 		//按键事件处理
-		public void KeyDown_And_KeyUp(string Sender, KeyEventArgs key) {
-			if (Sender == HotKeyState.KeyDown) {//使用多线程进行输入辅助处理,不影响主线程
+		public void KeyDown_And_KeyUp(HotKeyState.Em Sender, KeyEventArgs key) {
+			if (Sender == HotKeyState.Em.KeyUp && HKS.is_simulated == false) {//使用多线程进行输入辅助处理,不影响主线程
 				new MultiThreadInputAssist( HKS );
 			}
+			System.Threading.Thread.Sleep( 1 );//不加不行
+
 			//只有窗口是正常状态才调试输出
 			if (WindowState == FormWindowState.Normal) {
+				textBox_foregroundWindowInfo.Text = HKS.foregroundWindowInfo.MytoString();
+				Set_HotKeyState();
+				//显示前台窗口信息
+				textBox_foregroundWindowInfo.Text = HKS.foregroundWindowInfo.MytoString();
+				//label_foregroundWindow.Text = HKS.foregroundWindowInfo.MytoString();
+				//显示鼠标所在窗口信息(按右侧 Alt 显示)
+				if (key.KeyCode == Keys.RMenu && Sender == HotKeyState.Em.KeyUp) {
+					Tuple<IntPtr, StringBuilder, StringBuilder> MousePositionInfo = HKS.Get_MousePositionInfo();
+					SetFrom_textBox_windowInfo( MousePositionInfo.ToString() );
+
+				}
 				var v = new {
 					key.KeyValue,
 					key.KeyCode,
 					key.Modifiers,
 					key.SuppressKeyPress
 				};
+				textBox_foregroundWindowInfo.Text = HKS.foregroundWindowInfo.MytoString();
+
 				LogWrite( Sender + "\t" + v );
-				Set_HotKeyState();
 			}
 
-			textBox_foregroundWindowInfo.Text = HKS.foregroundWindowInfo.MytoString();
-			//label_foregroundWindow.Text = HKS.foregroundWindowInfo.MytoString();
-			if (key.KeyCode == Keys.RMenu && Sender == HotKeyState.KeyDown) {
-				Tuple<IntPtr, StringBuilder, StringBuilder> MousePositionInfo = HKS.Get_MousePositionInfo();
-				SetFrom_textBox_windowInfo( MousePositionInfo.ToString() );
-
-			}
 
 		}
 		//鼠标事件处理

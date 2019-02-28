@@ -14,31 +14,48 @@ namespace inputAssist {
 			//Console.WriteLine(DateTime.Now.ToString());
 			this.hKS = hKS;
 			if (!this.Is_phpstorm()) return;//判断前台窗口是否为phpstorm 如果不是就什么也不干了
-			this.Get_editFileType();
+			this.Get_editFileType();//获取文件类型
 			switch (this.editFileType) {
 				case "PHP":
-					InputProcess_php();
+					InputProcess_php();//执行php输入辅助
 					break;
 			}
 		}
+		/// <summary>
+		/// 正在编辑的文件类型
+		/// </summary>
+		private string editFileType;
+		/// <summary>
+		/// 按键信息
+		/// </summary>
+		private readonly HotKeyState hKS;
+
 
 		/// <summary>
 		/// php文件输入处理
 		/// </summary>
 		public void InputProcess_php() {
+			Boolean has_triggered = false;
 			AnalogInput AI = new AnalogInput();
 			//[,][.]
 			if (hKS.inputRecord[0] == Keys.OemPeriod && hKS.inputRecord[1] == Keys.Oemcomma) {//如果上一次按下的是逗号
+				has_triggered = true;
+				hKS.is_simulated = true;
 				AI.Delete( 2 );
 				AI.Input( "$v->" );
-			} else
-			//[/][.]
-			if (hKS.inputRecord[0] == Keys.OemPeriod && hKS.inputRecord[1] == Keys.OemQuestion) {
+
+			}
+			//[.][,]
+			if (hKS.inputRecord[0] == Keys.Oemcomma && hKS.inputRecord[1] == Keys.OemPeriod) {
+				has_triggered = true;
+				hKS.is_simulated = true;
 				AI.Delete( 2 );
 				AI.Input( "$this->" );
 			}
 			//[v][=]
-			if (hKS.inputRecord[0] == Keys.Oemplus && hKS.inputRecord[1] == Keys.V) {//如果上一次按下的是逗号
+			if (hKS.inputRecord[0] == Keys.Oemplus && hKS.inputRecord[1] == Keys.V) {
+				has_triggered = true;
+				hKS.is_simulated = true;
 				AI.Delete( 2 );
 				AI.Input( "$v = new class( get_defined_vars() ) { };" );
 				AI.Move( AnalogInput.Direction.Left, 2 );
@@ -54,28 +71,21 @@ namespace inputAssist {
 				AI.Input( "public $arg;//param\n" );
 				AI.Input( "" );
 				AI.Input( "public $tEach,$tI,$tKey,$tValue;//Temp variable" );
+
 			}
-
-			//KeyDown	{ KeyValue = 8, KeyCode = Back, Modifiers = None, SuppressKeyPress = False }
-			//Console.WriteLine( hKS.inputRecord[1] );
+			//[Alt][Alt]
+			if (hKS.inputRecord[0] == Keys.LMenu && hKS.inputRecord[1] == Keys.LMenu) {
+				has_triggered = true;
+				hKS.is_simulated = true;
+				AI.Input( "console_log(  );" );
+				AI.Move( AnalogInput.Direction.Left, 2 );
+			}
+			Console.WriteLine( has_triggered );
+			if (has_triggered) { //如果辅助输入已被触发就重置本次输入为ESC,避免下一个键被当做检测键
+				hKS.inputRecord[0] = Keys.Escape;
+			}
+			hKS.is_simulated = false;//还原为未在模拟输入
 		}
-
-		/// <summary>
-		/// 文件类型
-		/// </summary>
-		private enum FileType {
-			php, html, js
-		}
-		/// <summary>
-		/// 正在编辑的文件类型
-		/// </summary>
-		private string editFileType;
-		/// <summary>
-		/// 按键信息
-		/// </summary>
-		private readonly HotKeyState hKS;
-
-
 		/// <summary>
 		/// 判断前台窗口是否为phpstorm
 		/// </summary>
@@ -83,10 +93,13 @@ namespace inputAssist {
 		public Boolean Is_phpstorm() {
 			Boolean default_return = false;
 			string str = hKS.foregroundWindowInfo.title.ToString();
-			str = str.Substring( str.Length - 8 );
-			if (str == "PhpStorm") {
-				default_return = true;
+			if (str.Length >= 8) {
+				str = str.Substring( str.Length - 8 );
+				if (str == "PhpStorm") {
+					default_return = true;
+				}
 			}
+
 			//Console.WriteLine( hKS.foregroundWindowInfo.title.ToString() );
 			return default_return;
 		}

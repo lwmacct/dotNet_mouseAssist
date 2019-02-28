@@ -7,6 +7,9 @@ using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
 namespace inputAssist {
+	/// <summary>
+	/// 该类不能模拟输入正文中文会报错
+	/// </summary>
 	class AnalogInput {
 		/// <summary>
 		/// 模拟键盘的方法
@@ -50,7 +53,7 @@ namespace inputAssist {
 		/// <summary>
 		/// 首尾跳转
 		/// </summary>
-		/// <param name="direction">方向[1,2]=[首,尾]</param>
+		/// <param name="direction">方向</param>
 
 		public void HeadTail(Direction direction) {
 			int keyCode = 0;
@@ -68,7 +71,6 @@ namespace inputAssist {
 		public enum Direction {
 			Up, Down, Left, Right, Home, End
 		}
-
 		/// <summary>
 		/// 模拟输入
 		/// </summary>
@@ -131,7 +133,8 @@ namespace inputAssist {
 					}
 				}
 				keybd_event( (byte)notNeedShift_true[i], 0, 0, 0 );//
-			} else if (special.Contains( (int)to16 )) {
+			} else
+			if (special.Contains( (int)to16 )) {
 				for (i = 0; i < special.Length; i++) {
 					if (special[i] == (int)to16) {
 						break;

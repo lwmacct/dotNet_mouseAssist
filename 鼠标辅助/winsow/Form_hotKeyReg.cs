@@ -5,14 +5,14 @@ namespace app {
 	public partial class Form_hotKeyReg : Form {
 		public Form_hotKeyReg() {
 			InitializeComponent();
+			this.ShowInTaskbar = false;
+			this.WindowState = FormWindowState.Minimized;
 		}
 		#region 控件方法
 		private void HotkeyReg_Load(object sender, EventArgs e) {
 			//Btn_hotkeyReg_Click( null, EventArgs.Empty );
 			btn_hotkeyReg.PerformClick();//模拟点击  //this.WindowState = FormWindowState.Maximized;
-
 		}
-
 		private void Btn_hotkeyReg_Click(object sender, EventArgs e) {
 			Func_hotKeys_reg();
 		}
@@ -106,7 +106,6 @@ namespace app {
 		}
 		private void Func_right_callBack() {
 			//MessageBox.Show( "Ctrl + Shift + Alt + Right 快捷键" );
-
 			h.Keybd_event( HotKeys.key_Win, 0, 0, 0 );//模拟按下win键
 			h.Keybd_event( HotKeys.key_Control, 0, 0, 0 );//模拟按下Alt键
 			h.Keybd_event( HotKeys.key_Right, 0, 0, 0 );//模拟按下Alt键
