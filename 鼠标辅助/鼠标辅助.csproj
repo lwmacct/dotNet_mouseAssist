@@ -121,6 +121,9 @@
     <EmbeddedResource Include="Window\Form_inputHook.resx">
       <DependentUpon>Form_inputHook.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Window\Form_inputHook\Form_Auxiliary_vs2017.resx">
+      <DependentUpon>Form_Auxiliary_vs2017.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Window\main.resx">
       <DependentUpon>Main.cs</DependentUpon>
       <SubType>Designer</SubType>
