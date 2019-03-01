@@ -13,9 +13,11 @@ using System.Drawing;
 
 namespace Lwm.inputAssist {
 	/// <summary>
-	/// 该类不能模拟输入正文中文会报错
+	/// 模拟输入 (该类不能模拟输入正文中文会报错)
 	/// </summary>
 	internal class AnalogInput {
+		#region DLL 导入
+
 		/// <summary>
 		/// 模拟键盘的方法
 		/// </summary>
@@ -25,12 +27,18 @@ namespace Lwm.inputAssist {
 		/// <param name= "dwExtraInfo">一般设置为0</param>
 		[DllImport( "user32.dll" )]
 		public static extern void keybd_event(byte bVk, byte bScan, int dwFlags, int dwExtraInfo);
+
+		#endregion DLL 导入
+
+		#region 公开方法
+
 		/// <summary>
 		/// 方向
 		/// </summary>
 		public enum Direction {
 			Up, Down, Left, Right, Home, End
 		}
+
 		/// <summary>
 		/// 模拟删除
 		/// </summary>
@@ -42,6 +50,7 @@ namespace Lwm.inputAssist {
 			}
 			keybd_event( (int)Keys.Back, 0, 2, 0 );//放开删除
 		}
+
 		/// <summary>
 		/// 光标移动
 		/// </summary>
@@ -61,11 +70,11 @@ namespace Lwm.inputAssist {
 			}
 			keybd_event( (byte)keyCode, 0, 2, 0 );//放开
 		}
+
 		/// <summary>
 		/// 首尾跳转
 		/// </summary>
 		/// <param name="direction">方向</param>
-
 		public void HeadTail(Direction direction) {
 			int keyCode = 0;
 			switch (direction) {
@@ -91,6 +100,14 @@ namespace Lwm.inputAssist {
 			//TIS.Restore();
 		}
 
+		#endregion 公开方法
+
+		#region 私有方法
+
+		/// <summary>
+		/// 但字符输入
+		/// </summary>
+		/// <param name="strChar"></param>
 		private void CharInput(char strChar) {
 			keybd_event( 160, 0, 2, 0 );//放开 shift //开始和结尾都要记得放开
 										//!@#$%^&*()_+{}|:"<>?
@@ -152,10 +169,11 @@ namespace Lwm.inputAssist {
 			}
 			keybd_event( 160, 0, 2, 0 );//放开 shift //开始和结尾都要记得放开
 		}
+
 		/// <summary>
 		/// 调整到输入法到英文状态
 		/// </summary>
-		public void ToEnglish() {
+		private void ToEnglish() {
 			Boolean is_English = false;
 			ScreenCapture SC = new ScreenCapture();
 
@@ -176,5 +194,7 @@ namespace Lwm.inputAssist {
 				keybd_event( 161, 0, 2, 0 );//放开删除
 			}
 		}
+
+		#endregion 私有方法
 	}
 }
