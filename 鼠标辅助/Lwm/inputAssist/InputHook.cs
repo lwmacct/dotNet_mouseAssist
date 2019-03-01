@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Text;
 using System.Runtime.InteropServices;
 using System.Drawing;
+using KeyboardHook;
+
 namespace Lwm.inputAssist {
 	/// <summary>
 	/// 热键状态
@@ -135,7 +137,13 @@ namespace Lwm.inputAssist {
 			}
 		}
 		#endregion 子类
-		public enum Em {
+
+		#region 枚举
+
+		/// <summary>
+		/// 按钮动作
+		/// </summary>
+		public enum Action {
 			/// <summary>
 			/// 按键按下
 			/// </summary>
@@ -145,69 +153,78 @@ namespace Lwm.inputAssist {
 			/// </summary>
 			KeyUp
 		}
-		//事件委托
+		/// <summary>
+		/// 安装钩子的枚举
+		/// </summary>
+		public enum IH {
+
+			/// <summary>
+			/// 勾住输入设备
+			/// </summary>
+			HookUp = 0,
+
+			/// <summary>
+			/// 卸载钩子
+			/// </summary>
+			UnLoad,
+
+		}
+
+		#endregion 枚举
+
+		#region 事件委托
+
 		/// <summary>
 		/// 按下或者弹起某键
 		/// </summary>
 		/// <param name="KeyDown_And_KeyUp">按下或弹起,枚举Em</param>
 		/// <param name="key"></param>
-		public delegate void d_KeysEvent(Em KeyDown_And_KeyUp, KeyEventArgs key);
+		public delegate void d_KeysEvent(Action KeyDown_And_KeyUp, KeyEventArgs key);
+
 		/// <summary>
 		/// 鼠标事件
 		/// </summary>
 		/// <param name="e"></param>
 		public delegate void d_MouseEvent(MouseEventArgs e);
 
-		//事件事件
+		#endregion 事件委托
+
+		#region 事件
+
+		/// <summary>
+		/// 按下或者弹起某键
+		/// </summary>
 		public event d_KeysEvent Event_Keys;
+
+		/// <summary>
+		/// 鼠标事件
+		/// </summary>
 		public event d_MouseEvent Event_Mouse;
 
-		#region 公有变量
-		public Keys[] inputRecord = new Keys[5];
-		/// <summary>
-		/// 前台窗口信息
-		/// </summary>
-		public Foreground_Window_Info foregroundWindowInfo;
-		/// <summary>
-		/// 鼠标所在窗口信息
-		/// </summary>
-		public Mouse_Window_Info mouse_Window_Info;
-		/// <summary>
-		/// 按键状态集合
-		/// </summary>
-		public Dictionary<Keys, Boolean> keyStateAll = new Dictionary<Keys, Boolean>();
-		/// <summary>
-		/// 是否正在模拟(防止嵌套模拟造成死循环循环)
-		/// </summary>
-		public Boolean is_simulated = false;
-		#endregion
-
-		#region 私有变量
-		/// <summary>
-		/// 最后一次的鼠标记录
-		/// </summary>
-		private MouseEventArgs last_mouse_record;
-
-		#endregion
+		#endregion 事件
 
 		#region 公有方法
-		//按下处理
-		public void CallBack_KeyDown(object sender, KeyEventArgs key) {
-			this.foregroundWindowInfo = new Foreground_Window_Info();//更新前台窗口信息
-			this.keyStateAll[key.KeyCode] = true;//设置按键状态
-			Set_inputRecord( key.KeyCode );//设置输入记录
-			Event_Keys( Em.KeyDown, key );//发表事件
+
+		/// <summary>
+		/// 安装钩子
+		/// </summary>
+		public void Hooks_Install() {
+			vId.InstallHook( 1 );
 		}
-		//弹起处理
-		public void CallBack_KeyUp(object sender, KeyEventArgs key) {
-			this.keyStateAll[key.KeyCode] = false;//设置按键状态
-			Event_Keys( Em.KeyUp, key );//发表事件
+
+		/// <summary>
+		/// 卸载钩子
+		/// </summary>
+		/// <param name="type"></param>
+		public void Hooks_UnLoad() {
+			vId.InstallHook( 0 );
 		}
-		//鼠标处理
-		public void CallBack_MouseMove(object sender, MouseEventArgs e) {
-			last_mouse_record = e;//最后一次的鼠标记录
-			this.mouse_Window_Info = new Mouse_Window_Info( e.Location );//更新鼠标所在窗口信息
-			Event_Mouse( e );//发表事件
+
+		/// <summary>
+		/// 屏蔽键盘
+		/// </summary>
+		public void Shield_keyboard() {
+			vId.InstallHook( 2 );
 		}
 		#endregion 公有方法
 
@@ -226,9 +243,91 @@ namespace Lwm.inputAssist {
 			}
 			inputRecord[0] = KeyCode;//设置第一个值为最新值
 		}
+
+		/// <summary>
+		/// 按下处理
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="key"></param>
+		private void CallBack_KeyDown(object sender, KeyEventArgs key) {
+			this.window_Info_Foreground = new Foreground_Window_Info();//更新前台窗口信息
+			this.keyStateAll[key.KeyCode] = true;//设置按键状态
+			Set_inputRecord( key.KeyCode );//设置输入记录
+			Event_Keys( Action.KeyDown, key );//发表事件
+		}
+
+		/// <summary>
+		/// 弹起处理
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="key"></param>
+		private void CallBack_KeyUp(object sender, KeyEventArgs key) {
+			this.keyStateAll[key.KeyCode] = false;//设置按键状态
+			Event_Keys( Action.KeyUp, key );//发表事件
+		}
+
+		/// <summary>
+		/// 鼠标处理
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void CallBack_MouseMove(object sender, MouseEventArgs e) {
+			last_mouse_record = e;//最后一次的鼠标记录
+			this.window_Info_Mouse = new Mouse_Window_Info( e.Location );//更新鼠标所在窗口信息
+			Event_Mouse( e );//发表事件
+		}
+
 		#endregion 私有方法
 
+		#region 公有变量
+
+		/// <summary>
+		/// 输入记录
+		/// </summary>
+		public Keys[] inputRecord = new Keys[5];
+
+		/// <summary>
+		/// 前台窗口信息
+		/// </summary>
+		public Foreground_Window_Info window_Info_Foreground;
+
+		/// <summary>
+		/// 鼠标所在窗口信息
+		/// </summary>
+		public Mouse_Window_Info window_Info_Mouse;
+
+		/// <summary>
+		/// 按键状态集合
+		/// </summary>
+		public Dictionary<Keys, Boolean> keyStateAll = new Dictionary<Keys, Boolean>();
+
+		/// <summary>
+		/// 是否正在模拟(防止嵌套模拟造成死循环循环)
+		/// </summary>
+		public Boolean is_simulated = false;
+
+
+		#endregion 公有变量
+
+		#region 私有变量
+
+		/// <summary>
+		/// 最后一次的鼠标记录
+		/// </summary>
+		private MouseEventArgs last_mouse_record;
+
+		/// <summary>
+		/// //输入设备
+		/// </summary>
+		private InputDevice vId;
+		#endregion 私有变量
+	
 		public InputHook() {
+			//把按下和弹起加入热键状态方法,以便更新组合键母键状态
+			vId = new InputDevice();
+			vId.OnMouseActivity += new MouseEventHandler( CallBack_MouseMove );
+			vId.OnKeyDown += new KeyEventHandler( CallBack_KeyDown );
+			vId.OnKeyUp += new KeyEventHandler( CallBack_KeyUp );
 			//把所有按键加进去,初始化为 false,以免访问不到造成报错
 			foreach (Keys item in Enum.GetValues( typeof( Keys ) )) {
 				keyStateAll[item] = false;

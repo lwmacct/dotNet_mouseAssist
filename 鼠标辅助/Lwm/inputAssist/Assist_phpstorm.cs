@@ -8,7 +8,10 @@ using System.Windows.Forms;
 using System.Threading;
 
 namespace Lwm.inputAssist {
-	class Assist_PhpStorm {
+	/// <summary>
+	/// 辅助 PhpStorm 编码时的输入
+	/// </summary>
+	public class Assist_PhpStorm {
 		public Assist_PhpStorm(InputHook hKS) {
 			//Console.WriteLine(DateTime.Now.ToString());
 			this.hKS = hKS;
@@ -20,17 +23,16 @@ namespace Lwm.inputAssist {
 					break;
 			}
 		}
-		
 
 		/// <summary>
 		/// 正在编辑的文件类型
 		/// </summary>
 		private string editFileType;
+
 		/// <summary>
 		/// 按键信息
 		/// </summary>
 		private readonly InputHook hKS;
-
 
 		/// <summary>
 		/// php文件输入处理
@@ -72,7 +74,6 @@ namespace Lwm.inputAssist {
 				AI.Input( "public $arg;//param\n" );
 				AI.Input( "" );
 				AI.Input( "public $tEach,$tI,$tKey,$tValue;//Temp variable" );
-
 			}
 			//[Alt][Alt]
 			if (hKS.inputRecord[0] == Keys.LMenu && hKS.inputRecord[1] == Keys.LMenu) {
@@ -81,19 +82,20 @@ namespace Lwm.inputAssist {
 				AI.Input( "console_log(  );" );
 				AI.Move( AnalogInput.Direction.Left, 2 );
 			}
-			Console.WriteLine( has_triggered );
+
 			if (has_triggered) { //如果辅助输入已被触发就重置本次输入为ESC,避免下一个键被当做检测键
 				hKS.inputRecord[0] = Keys.Escape;
 			}
 			hKS.is_simulated = false;//还原为未在模拟输入
 		}
+
 		/// <summary>
 		/// 判断前台窗口是否为phpstorm
 		/// </summary>
 		/// <returns></returns>
 		public Boolean Is_phpstorm() {
 			Boolean default_return = false;
-			string str = hKS.foregroundWindowInfo.title.ToString();
+			string str = hKS.window_Info_Foreground.title.ToString();
 			if (str.Length >= 8) {
 				str = str.Substring( str.Length - 8 );
 				if (str == "PhpStorm") {
@@ -101,15 +103,16 @@ namespace Lwm.inputAssist {
 				}
 			}
 
-			//Console.WriteLine( hKS.foregroundWindowInfo.title.ToString() );
+			//Console.WriteLine( hKS.window_Info_Foreground.title.ToString() );
 			return default_return;
 		}
+
 		/// <summary>
 		/// 获取并设置正在编辑的文件类型
 		/// </summary>
 		public void Get_editFileType() {
 			//remove-repetition2 [Y:\myFile\GitHub\webProject\remove-repetition2] - ...\src\unitTest\test.php [remove-repetition2] - PhpStorm
-			string title = hKS.foregroundWindowInfo.title.ToString();
+			string title = hKS.window_Info_Foreground.title.ToString();
 			string[] titleSplit = title.Split( new char[] { '\\' } );
 			Regex reg = new Regex( "(.*?)\\.(.*?)\\s\\[" ); //(.*?)\.(.*?)\s\[
 			Match match = reg.Match( titleSplit[titleSplit.Length - 1] );

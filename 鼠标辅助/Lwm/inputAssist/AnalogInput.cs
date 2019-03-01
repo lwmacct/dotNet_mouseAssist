@@ -10,6 +10,7 @@ using Lwm.Md5;
 using System.Drawing;
 
 
+
 namespace Lwm.inputAssist {
 	/// <summary>
 	/// 该类不能模拟输入正文中文会报错

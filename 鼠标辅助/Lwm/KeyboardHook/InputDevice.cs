@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 using System.Reflection;
 
 namespace KeyboardHook {
-	class InputDevice {
+	public class InputDevice {
 		#region 私有常量
 
 		/// <summary>
