@@ -18,11 +18,11 @@ namespace app {
 				parent.panel_windowAll.BorderStyle = BorderStyle.FixedSingle;
 				parent.WindowState = FormWindowState.Minimized;//最小化
 				parent.ShowInTaskbar = false;//不显示任务栏
-
 			}
 			public InitFom(Main that) {
 				this.parent = that;
 				Form();
+				
 			}
 		}
 		private Form_hotKeyReg FHKR = new Form_hotKeyReg();//new 一个热键注册窗口

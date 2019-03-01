@@ -9,8 +9,9 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using KeyboardHook;
 using System.Runtime.InteropServices;
-using inputAssist;
+using Lwm.inputAssist;
 using System.Threading;
+
 
 namespace app {
 
@@ -19,10 +20,10 @@ namespace app {
 		private InputDevice inputDevice = new InputDevice();
 		public Form_inputHook() {
 			InitializeComponent();
-
+			
 			#region init 窗口
-			this.ShowInTaskbar = false;
-			this.WindowState = FormWindowState.Minimized;
+			//this.ShowInTaskbar = false;
+			//this.WindowState = FormWindowState.Minimized;
 			#endregion
 			//把按下和弹起加入热键状态方法,以便更新组合键母键状态
 			inputDevice.OnMouseActivity += new MouseEventHandler( HKS.CallBack_MouseMove );
@@ -33,7 +34,7 @@ namespace app {
 			//this.inputDevice.OnKeyPress += new KeyPressEventHandler( hook_MainKeyPress );//这个接口有点问题,控制台提示程序错误,但不停止运行
 
 		}
-		
+
 		/// <summary>
 		/// 初始化控件属性
 		/// </summary>
@@ -84,8 +85,14 @@ namespace app {
 
 		}
 
-		private void UnitTest() {
-			Console.WriteLine( (int)Convert.ToByte( 'a'.ToString().ToUpper().ToCharArray()[0] ) );
+		public void sss(int x ,int y)
+		{
+			Console.WriteLine(x+"---"+y);
+		}
+		private void UnitTest()
+		{
+			//安装钩子
+			
 		}
 
 		//按键事件处理
@@ -118,8 +125,6 @@ namespace app {
 
 				LogWrite( Sender + "\t" + v );
 			}
-
-
 		}
 		//鼠标事件处理
 		public void MouseEventHandler(MouseEventArgs e) {

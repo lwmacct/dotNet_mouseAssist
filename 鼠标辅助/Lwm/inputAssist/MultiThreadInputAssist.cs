@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Threading;
 
 
-namespace inputAssist {
+namespace Lwm.inputAssist {
 	/// <summary>
 	/// 多线程启动输入辅助,不阻塞主线程
 	/// </summary>

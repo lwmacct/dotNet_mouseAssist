@@ -11,9 +11,10 @@ namespace KeyboardHook {
 		/// 按键状态数组
 		/// </summary>
 		private readonly byte[] m_KeyState = new byte[256];
-
+		/// <summary>
+		/// flag=0 正常  flag=1 监控状态  flag=2 屏蔽键盘//
+		/// </summary>
 		private int flags;
-		//flag=0 正常  flag=1 监控状态  flag=2 屏蔽键盘//
 
 		#endregion 私有常量
 
@@ -65,7 +66,7 @@ namespace KeyboardHook {
 		/// </summary>
 		/// <remarks>当鼠标移动或者滚轮滚动时触发</remarks>
 		public event MouseUpdateEventHandler OnMouseUpdate;
-
+		
 		/// <summary>
 		/// 按键按下事件
 		/// </summary>

@@ -8,7 +8,7 @@ using System.Windows.Forms;
 using app;
 using System.Threading;
 
-namespace inputAssist {
+namespace Lwm.inputAssist {
 	class Assist_PhpStorm {
 		public Assist_PhpStorm(HotKeyState hKS) {
 			//Console.WriteLine(DateTime.Now.ToString());
@@ -21,6 +21,8 @@ namespace inputAssist {
 					break;
 			}
 		}
+		
+
 		/// <summary>
 		/// 正在编辑的文件类型
 		/// </summary>

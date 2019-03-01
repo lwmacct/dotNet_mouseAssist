@@ -4,10 +4,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{5A70F50F-C4E3-454F-A5B6-8B074CC4ACF3}</ProjectGuid>
+    <ProjectGuid>{C074B31B-8246-4986-9507-B220F2073476}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>app</RootNamespace>
-    <AssemblyName>app</AssemblyName>
+    <RootNamespace>截图</RootNamespace>
+    <AssemblyName>截图</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -46,35 +46,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Lwm\MyConvert\ImageToByte.cs" />
-    <Compile Include="Lwm\inputAssist\Toggle_Input_State.cs" />
-    <Compile Include="Lwm\Md5\Get_md5.cs" />
+    <Compile Include="Lwm\Convert\ImageToByte.cs" />
+    <Compile Include="Lwm\Md5\Get_Md5.cs" />
     <Compile Include="Lwm\ScreenShot\ScreenCapture.cs" />
-    <Compile Include="Lwm\inputAssist\AnalogInput.cs" />
-    <Compile Include="Lwm\inputAssist\MultiThreadInputAssist.cs" />
-    <Compile Include="Lwm\KeyboardHook\InputDevice.cs" />
-    <Compile Include="Lwm\KeyboardHook\public_variable.cs" />
-    <Compile Include="Lwm\KeyboardHook\Win32API.cs" />
-    <Compile Include="windowClass\Form_hotKeyReg\HotKeys.cs" />
-    <Compile Include="Lwm\inputAssist\Assist_phpstorm.cs" />
-    <Compile Include="Lwm\inputAssist\HotKeyState.cs" />
-    <Compile Include="winsow\Form_hotKeyReg.cs">
+    <Compile Include="window\Form_main.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="winsow\Form_hotKeyReg.Designer.cs">
-      <DependentUpon>Form_hotKeyReg.cs</DependentUpon>
-    </Compile>
-    <Compile Include="winsow\Form_inputHook.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="winsow\Form_inputHook.Designer.cs">
-      <DependentUpon>Form_inputHook.cs</DependentUpon>
-    </Compile>
-    <Compile Include="winsow\Main.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="winsow\Main.Designer.cs">
-      <DependentUpon>Main.cs</DependentUpon>
+    <Compile Include="window\Form_main.Designer.cs">
+      <DependentUpon>Form_main.cs</DependentUpon>
     </Compile>
     <Compile Include="Properties\Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -86,17 +65,9 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
     </Compile>
-    <EmbeddedResource Include="winsow\Form_hotKeyReg.resx">
-      <DependentUpon>Form_hotKeyReg.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="winsow\Form_inputHook.resx">
-      <DependentUpon>Form_inputHook.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="winsow\main.resx">
-      <DependentUpon>Main.cs</DependentUpon>
-      <SubType>Designer</SubType>
+    <EmbeddedResource Include="window\Form_main.resx">
+      <DependentUpon>Form_main.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -111,8 +82,6 @@
   <ItemGroup>
     <None Include="Properties\App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="windowClass\Form_inputHook\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -9,6 +9,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "鼠标按键切换虚拟桌
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "鼠标辅助", "鼠标辅助\鼠标辅助.csproj", "{5A70F50F-C4E3-454F-A5B6-8B074CC4ACF3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "取输入法状态", "取输入法状态\取输入法状态.csproj", "{0E0284FB-0FC4-4605-A02C-0D1147B8A665}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "截图", "截图\截图.csproj", "{C074B31B-8246-4986-9507-B220F2073476}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +31,14 @@ Global
 		{5A70F50F-C4E3-454F-A5B6-8B074CC4ACF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5A70F50F-C4E3-454F-A5B6-8B074CC4ACF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5A70F50F-C4E3-454F-A5B6-8B074CC4ACF3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0E0284FB-0FC4-4605-A02C-0D1147B8A665}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0E0284FB-0FC4-4605-A02C-0D1147B8A665}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0E0284FB-0FC4-4605-A02C-0D1147B8A665}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0E0284FB-0FC4-4605-A02C-0D1147B8A665}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C074B31B-8246-4986-9507-B220F2073476}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C074B31B-8246-4986-9507-B220F2073476}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C074B31B-8246-4986-9507-B220F2073476}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C074B31B-8246-4986-9507-B220F2073476}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
