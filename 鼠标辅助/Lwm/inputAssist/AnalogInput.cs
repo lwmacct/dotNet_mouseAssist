@@ -5,17 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Lwm.ScreenShot;
 using Lwm.Md5;
 using System.Drawing;
-using System.Runtime.InteropServices;
-using System.Windows.Forms;
-using app;
+
 
 namespace Lwm.inputAssist {
 	/// <summary>
@@ -88,14 +81,13 @@ namespace Lwm.inputAssist {
 		/// </summary>
 		/// <param name="inputStr"></param>
 		public void Input(string inputStr) {
-			Toggle_Input_State TIS = new Toggle_Input_State();
-			TIS.ToEnglish();
+			ToEnglish();//调整到输入法到英文状态
 			char[] charAll = inputStr.ToCharArray();
 			//byte[] byteAll = Encoding.Default.GetBytes( inputStr );
 			for (var i = 0; i < charAll.Length; i++) {
 				this.CharInput( charAll[i] );
 			}
-			TIS.Restore();
+			//TIS.Restore();
 		}
 
 		private void CharInput(char strChar) {
@@ -158,6 +150,30 @@ namespace Lwm.inputAssist {
 				keybd_event( (byte)special_true[i], 0, 0, 0 );//
 			}
 			keybd_event( 160, 0, 2, 0 );//放开 shift //开始和结尾都要记得放开
+		}
+		/// <summary>
+		/// 调整到输入法到英文状态
+		/// </summary>
+		public void ToEnglish() {
+			Boolean is_English = false;
+			ScreenCapture SC = new ScreenCapture();
+
+			Image image = SC.CaptureScreen( 2414, 1411, 20, 20 );//抓取屏幕(层叠的窗口)
+			Get_Md5 gm = new Get_Md5();
+			string md5 = gm.Get_imageMd5( image );
+			//07b48a26a5f2a8880e3c7de8352eedfc 英文
+			//0aae315c797b865c53fd40393540afea 中文
+			switch (md5) {
+				case "07b48a26a5f2a8880e3c7de8352eedfc":
+					is_English = true;
+					break;
+				default:
+					break;
+			}
+			if (is_English == false) {
+				keybd_event( 161, 0, 0, 0 );//放开删除
+				keybd_event( 161, 0, 2, 0 );//放开删除
+			}
 		}
 	}
 }

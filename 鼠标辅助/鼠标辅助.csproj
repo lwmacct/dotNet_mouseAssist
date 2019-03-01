@@ -47,7 +47,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Lwm\MyConvert\ImageToByte.cs" />
-    <Compile Include="Lwm\inputAssist\Toggle_Input_State.cs" />
     <Compile Include="Lwm\Md5\Get_md5.cs" />
     <Compile Include="Lwm\ScreenShot\ScreenCapture.cs" />
     <Compile Include="Lwm\inputAssist\AnalogInput.cs" />
