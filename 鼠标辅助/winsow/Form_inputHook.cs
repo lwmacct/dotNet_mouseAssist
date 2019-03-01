@@ -22,8 +22,8 @@ namespace app {
 			InitializeComponent();
 			
 			#region init 窗口
-			//this.ShowInTaskbar = false;
-			//this.WindowState = FormWindowState.Minimized;
+			this.ShowInTaskbar = false;
+			this.WindowState = FormWindowState.Minimized;
 			#endregion
 			//把按下和弹起加入热键状态方法,以便更新组合键母键状态
 			inputDevice.OnMouseActivity += new MouseEventHandler( HKS.CallBack_MouseMove );
