@@ -1,4 +1,4 @@
-﻿namespace app {
+﻿namespace App {
 	partial class Form_inputHook {
 		/// <summary>
 		/// Required designer variable.

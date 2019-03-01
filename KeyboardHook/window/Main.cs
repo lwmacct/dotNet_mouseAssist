@@ -3,7 +3,7 @@ using System;
 using System.Windows.Forms;
 
 
-namespace app {
+namespace App {
 	public partial class Hk_Form : Form {
 
 		private InputDevice id = new InputDevice();

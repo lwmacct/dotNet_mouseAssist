@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace app {
+namespace App {
 	public partial class Main : Form {
 		Form_hotKeyReg fhkr = new Form_hotKeyReg();//new 一个热键注册窗口
 		public Main() {

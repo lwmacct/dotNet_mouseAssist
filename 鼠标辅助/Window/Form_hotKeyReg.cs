@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 
-namespace app {
+namespace App {
 	public partial class Form_hotKeyReg : Form {
 		public Form_hotKeyReg() {
 			InitializeComponent();

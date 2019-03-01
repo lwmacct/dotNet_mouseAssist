@@ -1,4 +1,4 @@
-﻿namespace app {
+﻿namespace App {
 	partial class Form_hotKeyReg {
 		/// <summary>
 		/// Required designer variable.

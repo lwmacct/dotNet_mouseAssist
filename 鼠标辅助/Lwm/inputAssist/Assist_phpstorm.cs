@@ -5,12 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
-using app;
 using System.Threading;
 
 namespace Lwm.inputAssist {
 	class Assist_PhpStorm {
-		public Assist_PhpStorm(HotKeyState hKS) {
+		public Assist_PhpStorm(InputHook hKS) {
 			//Console.WriteLine(DateTime.Now.ToString());
 			this.hKS = hKS;
 			if (!this.Is_phpstorm()) return;//判断前台窗口是否为phpstorm 如果不是就什么也不干了
@@ -30,7 +29,7 @@ namespace Lwm.inputAssist {
 		/// <summary>
 		/// 按键信息
 		/// </summary>
-		private readonly HotKeyState hKS;
+		private readonly InputHook hKS;
 
 
 		/// <summary>

@@ -10,7 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace app {
+namespace App {
 	public partial class Main : Form {
 		private class InitFom {
 			private Main parent;
