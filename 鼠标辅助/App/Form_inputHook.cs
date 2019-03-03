@@ -34,8 +34,9 @@ namespace App {
 			//init 窗口
 			this.ShowInTaskbar = false;
 			this.WindowState = FormWindowState.Minimized;
+			//vFwl.Show();
 			// vHks
-			vFwl.Show();
+			
 			vHks.Event_Keys += new InputHook.D_KeysEvent( CallBack_KeyboardEvent );
 			vHks.Event_Mouse += new InputHook.D_MouseEvent( CallBack_MouseEvent );
 			//辅助窗口列表

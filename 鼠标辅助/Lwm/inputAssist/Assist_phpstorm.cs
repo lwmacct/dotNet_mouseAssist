@@ -41,7 +41,7 @@ namespace Lwm.inputAssist {
 			Keys key_0 = hKS.keyboard_Input_Record[0].KeyCode;
 			Keys key_1 = hKS.keyboard_Input_Record[1].KeyCode;
 			Boolean has_triggered = false;
-			AnalogInput AI = new AnalogInput();
+			AnalogInput AI = new AnalogInput();//模拟输入类
 			//[,][.]
 			if (key_0 == Keys.OemPeriod && key_1 == Keys.Oemcomma) {//如果上一次按下的是逗号
 				has_triggered = true;
