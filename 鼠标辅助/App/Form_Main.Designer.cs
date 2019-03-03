@@ -1,5 +1,5 @@
 ﻿namespace App {
-	partial class Main {
+	partial class Form_Main {
 		/// <summary>
 		/// 必需的设计器变量。
 		/// </summary>
@@ -24,7 +24,7 @@
 		/// </summary>
 		private void InitializeComponent() {
 			this.components = new System.ComponentModel.Container();
-			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Main));
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form_Main));
 			this.panel_windowAll = new System.Windows.Forms.Panel();
 			this.notifyIcon_MainTray = new System.Windows.Forms.NotifyIcon(this.components);
 			this.contextMenuStrip_Maintray = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -73,13 +73,13 @@
 			this.button_inputHook.Text = "button1";
 			this.button_inputHook.UseVisualStyleBackColor = true;
 			// 
-			// Main
+			// Form_Main
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(902, 574);
 			this.Controls.Add(this.panel_windowAll);
-			this.Name = "Main";
+			this.Name = "Form_Main";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "程序入口";
 			this.Load += new System.EventHandler(this.Main_Load);

@@ -178,20 +178,25 @@ namespace Lwm.inputAssist {
 			ScreenCapture SC = new ScreenCapture();
 
 			Image image = SC.CaptureScreen( 2414, 1411, 20, 20 );//抓取屏幕(层叠的窗口)
-			Get_Md5 gm = new Get_Md5();
-			string md5 = gm.Get_imageMd5( image );
-			//07b48a26a5f2a8880e3c7de8352eedfc 英文
-			//0aae315c797b865c53fd40393540afea 中文
+			
+			string md5 = Md5.Md5.Get_imageMd5( image );
+			//Console.WriteLine(md5);
+
+			//2ff940e2ff8e4e79fc394494b489a935 中文
 			switch (md5) {
-				case "07b48a26a5f2a8880e3c7de8352eedfc":
+				case "2ff940e2ff8e4e79fc394494b489a935":
+					is_English = true;
+					break;
+				case "333333333333":
 					is_English = true;
 					break;
 				default:
 					break;
 			}
-			if (is_English == false) {
-				keybd_event( 161, 0, 0, 0 );//放开删除
-				keybd_event( 161, 0, 2, 0 );//放开删除
+
+			if (is_English) {
+				keybd_event( 161, 0, 0, 0 );//按下shift
+				keybd_event( 161, 0, 2, 0 );//放开shift
 			}
 		}
 

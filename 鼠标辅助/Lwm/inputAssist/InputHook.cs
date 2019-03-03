@@ -8,7 +8,7 @@ using KeyboardHook;
 
 namespace Lwm.inputAssist {
 	/// <summary>
-	/// 热键状态
+	/// 输入设备钩子
 	/// </summary>
 	public class InputHook {
 
@@ -68,10 +68,11 @@ namespace Lwm.inputAssist {
 		#endregion
 
 		#region 子类
+
 		/// <summary>
-		/// 前台窗口信息类
+		/// 窗口信息类
 		/// </summary>
-		public class Foreground_Window_Info {
+		public class Window_Info {
 			/// <summary>
 			/// 句柄
 			/// </summary>
@@ -84,16 +85,12 @@ namespace Lwm.inputAssist {
 			/// 类名
 			/// </summary>
 			public StringBuilder className = new StringBuilder( 256 );
-			public Foreground_Window_Info() {
-				this.IntPtr = GetForegroundWindow();//得到窗口句柄
-				GetWindowText( this.IntPtr, this.title, this.title.Capacity );//得到窗口的标题
-				GetClassName( this.IntPtr, this.className, this.className.Capacity );//得到窗口的类名
-			}
+			public Window_Info() { }
 			/// <summary>
 			/// 转为字符串
 			/// </summary>
 			/// <returns></returns>
-			public string MytoString() {
+			public override string ToString() {
 				return new {
 					this.IntPtr,
 					this.title,
@@ -101,40 +98,29 @@ namespace Lwm.inputAssist {
 				}.ToString();
 			}
 		}
+
+		/// <summary>
+		/// 前台窗口信息类
+		/// </summary>
+		public class Foreground_Window_Info : Window_Info {
+			public Foreground_Window_Info() {
+				this.IntPtr = GetForegroundWindow();//得到窗口句柄
+				GetWindowText( this.IntPtr, this.title, this.title.Capacity );//得到窗口的标题
+				GetClassName( this.IntPtr, this.className, this.className.Capacity );//得到窗口的类名
+			}
+
+		}
+
 		/// <summary>
 		/// 鼠标所在窗口信息类
 		/// </summary>
-		public class Mouse_Window_Info {
-			/// <summary>
-			/// 句柄
-			/// </summary>
-			public IntPtr IntPtr;
-			/// <summary>
-			/// 标题
-			/// </summary>StringBuilder
-			public StringBuilder title = new StringBuilder( 256 );
-			/// <summary>
-			/// 类名
-			/// </summary>
-			public StringBuilder className = new StringBuilder( 256 );
-
-			//public string toString;
+		public class Mouse_Window_Info : Window_Info {
 			public Mouse_Window_Info(Point location) {
 				IntPtr = WindowFromPoint( location );//得到窗口句柄
 				GetWindowText( IntPtr, title, title.Capacity );//得到窗口的标题
 				GetClassName( IntPtr, className, className.Capacity );//得到窗口的类名
 			}
-			/// <summary>
-			/// 转为字符串
-			/// </summary>
-			/// <returns></returns>
-			public string MytoString() {
-				return new {
-					this.IntPtr,
-					this.title,
-					this.className
-				}.ToString();
-			}
+
 		}
 		#endregion 子类
 
@@ -178,14 +164,13 @@ namespace Lwm.inputAssist {
 		/// 按下或者弹起某键
 		/// </summary>
 		/// <param name="KeyDown_And_KeyUp">按下或弹起,枚举Em</param>
-		/// <param name="key"></param>
-		public delegate void d_KeysEvent(Action KeyDown_And_KeyUp, KeyEventArgs key);
+		public delegate void D_KeysEvent(InputHook source, Action KeyDown_And_KeyUp);
 
 		/// <summary>
 		/// 鼠标事件
 		/// </summary>
 		/// <param name="e"></param>
-		public delegate void d_MouseEvent(MouseEventArgs e);
+		public delegate void D_MouseEvent(InputHook source, MouseEventArgs e);
 
 		#endregion 事件委托
 
@@ -194,12 +179,12 @@ namespace Lwm.inputAssist {
 		/// <summary>
 		/// 按下或者弹起某键
 		/// </summary>
-		public event d_KeysEvent Event_Keys;
+		public event D_KeysEvent Event_Keys;
 
 		/// <summary>
 		/// 鼠标事件
 		/// </summary>
-		public event d_MouseEvent Event_Mouse;
+		public event D_MouseEvent Event_Mouse;
 
 		#endregion 事件
 
@@ -231,39 +216,24 @@ namespace Lwm.inputAssist {
 		#region 私有方法
 
 		/// <summary>
-		/// 设置上一次按下的键,最多保存5条记录
-		/// </summary>
-		/// <param name="KeyCode"></param>
-		private void Set_inputRecord(Keys KeyCode) {
-			//数组后移
-			for (int i = inputRecord.Length - 1; i >= 0; i--) {
-				if (i - 1 >= 0) {
-					inputRecord[i] = inputRecord[i - 1];
-				}
-			}
-			inputRecord[0] = KeyCode;//设置第一个值为最新值
-		}
-
-		/// <summary>
 		/// 按下处理
 		/// </summary>
 		/// <param name="sender"></param>
-		/// <param name="key"></param>
 		private void CallBack_KeyDown(object sender, KeyEventArgs key) {
-			this.window_Info_Foreground = new Foreground_Window_Info();//更新前台窗口信息
 			this.keyStateAll[key.KeyCode] = true;//设置按键状态
-			Set_inputRecord( key.KeyCode );//设置输入记录
-			Event_Keys( Action.KeyDown, key );//发表事件
+			Event_Keys( this, Action.KeyDown );//发表事件
 		}
 
 		/// <summary>
 		/// 弹起处理
 		/// </summary>
 		/// <param name="sender"></param>
-		/// <param name="key"></param>
 		private void CallBack_KeyUp(object sender, KeyEventArgs key) {
 			this.keyStateAll[key.KeyCode] = false;//设置按键状态
-			Event_Keys( Action.KeyUp, key );//发表事件
+			keyboard_Input_Record.Insert( 0, key );//设置输入记录
+			keyboard_Input_Record.RemoveAt(32);//只保留32个
+			this.window_Info_Foreground = new Foreground_Window_Info();//更新前台窗口信息
+			Event_Keys( this, Action.KeyUp );//发表事件
 		}
 
 		/// <summary>
@@ -272,9 +242,11 @@ namespace Lwm.inputAssist {
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
 		private void CallBack_MouseMove(object sender, MouseEventArgs e) {
-			last_mouse_record = e;//最后一次的鼠标记录
+			mouse_Move_Record.Insert( 0, e );//记录鼠标轨迹
+			mouse_Move_Record.RemoveAt(32);//只保留32个
 			this.window_Info_Mouse = new Mouse_Window_Info( e.Location );//更新鼠标所在窗口信息
-			Event_Mouse( e );//发表事件
+			Event_Mouse( this, e );//发表事件
+
 		}
 
 		#endregion 私有方法
@@ -282,19 +254,24 @@ namespace Lwm.inputAssist {
 		#region 公有变量
 
 		/// <summary>
-		/// 输入记录
+		/// 键盘输入记录
 		/// </summary>
-		public Keys[] inputRecord = new Keys[5];
+		public List<KeyEventArgs> keyboard_Input_Record=new List<KeyEventArgs>();
 
 		/// <summary>
+		/// 鼠标移动记录
+		/// </summary>
+		public List<MouseEventArgs> mouse_Move_Record=new List<MouseEventArgs>();
+
+		/// <summary>S
 		/// 前台窗口信息
 		/// </summary>
-		public Foreground_Window_Info window_Info_Foreground;
+		public Foreground_Window_Info window_Info_Foreground = new Foreground_Window_Info();
 
 		/// <summary>
 		/// 鼠标所在窗口信息
 		/// </summary>
-		public Mouse_Window_Info window_Info_Mouse;
+		public Mouse_Window_Info window_Info_Mouse = new Mouse_Window_Info( new Point( 0, 0 ) );
 
 		/// <summary>
 		/// 按键状态集合
@@ -302,7 +279,7 @@ namespace Lwm.inputAssist {
 		public Dictionary<Keys, Boolean> keyStateAll = new Dictionary<Keys, Boolean>();
 
 		/// <summary>
-		/// 是否正在模拟(防止嵌套模拟造成死循环循环)
+		/// 是否正在模拟输入(防止嵌套模拟造成死循环循环)
 		/// </summary>
 		public Boolean is_simulated = false;
 
@@ -312,25 +289,27 @@ namespace Lwm.inputAssist {
 		#region 私有变量
 
 		/// <summary>
-		/// 最后一次的鼠标记录
-		/// </summary>
-		private MouseEventArgs last_mouse_record;
-
-		/// <summary>
 		/// //输入设备
 		/// </summary>
 		private InputDevice vId;
 		#endregion 私有变量
-	
+
 		public InputHook() {
 			//把按下和弹起加入热键状态方法,以便更新组合键母键状态
 			vId = new InputDevice();
 			vId.OnMouseActivity += new MouseEventHandler( CallBack_MouseMove );
 			vId.OnKeyDown += new KeyEventHandler( CallBack_KeyDown );
 			vId.OnKeyUp += new KeyEventHandler( CallBack_KeyUp );
+
 			//把所有按键加进去,初始化为 false,以免访问不到造成报错
 			foreach (Keys item in Enum.GetValues( typeof( Keys ) )) {
 				keyStateAll[item] = false;
+			}
+			//填充鼠标和键盘的输入
+			for (int i = 0; i < 32; i++) {
+				mouse_Move_Record.Add( new MouseEventArgs( 0, 0, 0, 0, 0 ) );
+				keyboard_Input_Record.Add( new KeyEventArgs( Keys.Escape ) );
+				//没有设置清理 这个两个数组的方法,不知道内存会不会爆
 			}
 		}
 

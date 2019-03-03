@@ -11,24 +11,25 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace App {
-	public partial class Main : Form {
+	public partial class Form_Main : Form {
 		private class InitFom {
-			private Main parent;
+			private Form_Main parent;
 			public void Form() {
 				parent.panel_windowAll.BorderStyle = BorderStyle.FixedSingle;
 				parent.WindowState = FormWindowState.Minimized;//最小化
 				parent.ShowInTaskbar = false;//不显示任务栏
 			}
-			public InitFom(Main that) {
+			public InitFom(Form_Main that) {
 				this.parent = that;
 				Form();
-				
+
 			}
 		}
+
 		private Form_hotKeyReg FHKR = new Form_hotKeyReg();//new 一个热键注册窗口
 		private Form_inputHook FIH = new Form_inputHook();//new 一个输入辅助窗口
 
-		public Main() {
+		public Form_Main() {
 			InitializeComponent();
 			new InitFom( this );//初始化当前窗口
 			FHKR.Show();//显示 Form_hotKeyReg

@@ -22,6 +22,7 @@ namespace Lwm.inputAssist {
 		/// 辅助 PhpStorm 编码
 		/// </summary>
 		public void Assist_PhpStorm() {
+			
 			System.Threading.Thread.Sleep( 1 );
 			new Assist_PhpStorm( hKS );//加载 phpstorm 辅助类
 		}

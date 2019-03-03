@@ -6,12 +6,27 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{5A70F50F-C4E3-454F-A5B6-8B074CC4ACF3}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>app</RootNamespace>
-    <AssemblyName>app</AssemblyName>
+    <RootNamespace>App</RootNamespace>
+    <AssemblyName>App</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -66,7 +81,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Window\Form_inputHook\Activate_Auxiliary_Window.cs" />
+    <Compile Include="App\GlobalVar.cs" />
     <Compile Include="Lwm\MyConvert\ImageToByte.cs" />
     <Compile Include="Lwm\Md5\Get_md5.cs" />
     <Compile Include="Lwm\ScreenShot\ScreenCapture.cs" />
@@ -75,33 +90,32 @@
     <Compile Include="Lwm\KeyboardHook\InputDevice.cs" />
     <Compile Include="Lwm\KeyboardHook\public_variable.cs" />
     <Compile Include="Lwm\KeyboardHook\Win32API.cs" />
-    <Compile Include="Window\Form_hotKeyReg\HotKeys.cs" />
+    <Compile Include="App\Form_hotKeyReg\HotKeys.cs" />
     <Compile Include="Lwm\inputAssist\Assist_phpstorm.cs" />
     <Compile Include="Lwm\inputAssist\InputHook.cs" />
-    <Compile Include="Window\Form_inputHook\Auxiliary_Window_List.cs" />
-    <Compile Include="Window\Form_inputHook\Form_Auxiliary_vs2017.cs">
+    <Compile Include="App\MouseAuxiliary\Form_Auxiliary_Window.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Window\Form_inputHook\Form_Auxiliary_vs2017.Designer.cs">
-      <DependentUpon>Form_Auxiliary_vs2017.cs</DependentUpon>
+    <Compile Include="App\MouseAuxiliary\Form_Auxiliary_Window.Designer.cs">
+      <DependentUpon>Form_Auxiliary_Window.cs</DependentUpon>
     </Compile>
-    <Compile Include="Window\Form_hotKeyReg.cs">
+    <Compile Include="App\Form_hotKeyReg.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Window\Form_hotKeyReg.Designer.cs">
+    <Compile Include="App\Form_hotKeyReg.Designer.cs">
       <DependentUpon>Form_hotKeyReg.cs</DependentUpon>
     </Compile>
-    <Compile Include="Window\Form_inputHook.cs">
+    <Compile Include="App\Form_inputHook.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Window\Form_inputHook.Designer.cs">
+    <Compile Include="App\Form_inputHook.Designer.cs">
       <DependentUpon>Form_inputHook.cs</DependentUpon>
     </Compile>
-    <Compile Include="Window\Main.cs">
+    <Compile Include="App\Form_Main.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Window\Main.Designer.cs">
-      <DependentUpon>Main.cs</DependentUpon>
+    <Compile Include="App\Form_Main.Designer.cs">
+      <DependentUpon>Form_Main.cs</DependentUpon>
     </Compile>
     <Compile Include="Properties\Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -115,17 +129,17 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <EmbeddedResource Include="Window\Form_hotKeyReg.resx">
+    <EmbeddedResource Include="App\Form_hotKeyReg.resx">
       <DependentUpon>Form_hotKeyReg.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Window\Form_inputHook.resx">
+    <EmbeddedResource Include="App\Form_inputHook.resx">
       <DependentUpon>Form_inputHook.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Window\Form_inputHook\Form_Auxiliary_vs2017.resx">
-      <DependentUpon>Form_Auxiliary_vs2017.cs</DependentUpon>
+    <EmbeddedResource Include="App\MouseAuxiliary\Form_Auxiliary_Window.resx">
+      <DependentUpon>Form_Auxiliary_Window.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Window\main.resx">
-      <DependentUpon>Main.cs</DependentUpon>
+    <EmbeddedResource Include="App\Form_Main.resx">
+      <DependentUpon>Form_Main.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <None Include="Properties\Settings.settings">
@@ -142,7 +156,19 @@
     <None Include="Properties\App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Lwm\MouseAuxiliary\" />
+    <None Include="Resources\App-icon-64.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.7.2">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.7.2 %28x86 和 x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

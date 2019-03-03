@@ -28,7 +28,6 @@ namespace Lwm.inputAssist {
 		/// 正在编辑的文件类型
 		/// </summary>
 		private string editFileType;
-
 		/// <summary>
 		/// 按键信息
 		/// </summary>
@@ -38,10 +37,13 @@ namespace Lwm.inputAssist {
 		/// php文件输入处理
 		/// </summary>
 		public void InputProcess_php() {
+
+			Keys key_0 = hKS.keyboard_Input_Record[0].KeyCode;
+			Keys key_1 = hKS.keyboard_Input_Record[1].KeyCode;
 			Boolean has_triggered = false;
 			AnalogInput AI = new AnalogInput();
 			//[,][.]
-			if (hKS.inputRecord[0] == Keys.OemPeriod && hKS.inputRecord[1] == Keys.Oemcomma) {//如果上一次按下的是逗号
+			if (key_0 == Keys.OemPeriod && key_1 == Keys.Oemcomma) {//如果上一次按下的是逗号
 				has_triggered = true;
 				hKS.is_simulated = true;
 				AI.Delete( 2 );
@@ -49,14 +51,14 @@ namespace Lwm.inputAssist {
 
 			}
 			//[.][,]
-			if (hKS.inputRecord[0] == Keys.Oemcomma && hKS.inputRecord[1] == Keys.OemPeriod) {
+			if (key_0 == Keys.Oemcomma && key_1 == Keys.OemPeriod) {
 				has_triggered = true;
 				hKS.is_simulated = true;
 				AI.Delete( 2 );
 				AI.Input( "$this->" );
 			}
 			//[v][=]
-			if (hKS.inputRecord[0] == Keys.Oemplus && hKS.inputRecord[1] == Keys.V) {
+			if (key_0 == Keys.Oemplus && key_1 == Keys.V) {
 				has_triggered = true;
 				hKS.is_simulated = true;
 				AI.Delete( 2 );
@@ -76,7 +78,7 @@ namespace Lwm.inputAssist {
 				AI.Input( "public $tEach,$tI,$tKey,$tValue;//Temp variable" );
 			}
 			//[Alt][Alt]
-			if (hKS.inputRecord[0] == Keys.LMenu && hKS.inputRecord[1] == Keys.LMenu) {
+			if (key_0 == Keys.LMenu && key_1 == Keys.LMenu) {
 				has_triggered = true;
 				hKS.is_simulated = true;
 				AI.Input( "console_log(  );" );
@@ -84,7 +86,7 @@ namespace Lwm.inputAssist {
 			}
 
 			if (has_triggered) { //如果辅助输入已被触发就重置本次输入为ESC,避免下一个键被当做检测键
-				hKS.inputRecord[0] = Keys.Escape;
+				key_0 = Keys.Escape;
 			}
 			hKS.is_simulated = false;//还原为未在模拟输入
 		}
@@ -94,6 +96,7 @@ namespace Lwm.inputAssist {
 		/// </summary>
 		/// <returns></returns>
 		public Boolean Is_phpstorm() {
+
 			Boolean default_return = false;
 			string str = hKS.window_Info_Foreground.title.ToString();
 			if (str.Length >= 8) {
@@ -102,7 +105,6 @@ namespace Lwm.inputAssist {
 					default_return = true;
 				}
 			}
-
 			//Console.WriteLine( hKS.window_Info_Foreground.title.ToString() );
 			return default_return;
 		}

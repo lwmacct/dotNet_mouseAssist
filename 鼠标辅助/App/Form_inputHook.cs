@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -9,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using KeyboardHook;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography.X509Certificates;
 using Lwm.inputAssist;
 using System.Threading;
 
@@ -23,9 +25,9 @@ namespace App {
 		private InputHook vHks = new InputHook();
 
 		/// <summary>
-		/// 有可能弹出的辅助窗口列表
+		/// 视图辅助窗口
 		/// </summary>
-		private Auxiliary_Window_List vAwl = new Auxiliary_Window_List();
+		private Form_Auxiliary_Window vFwl = new Form_Auxiliary_Window();
 
 		public Form_inputHook() {
 			InitializeComponent();
@@ -33,8 +35,9 @@ namespace App {
 			this.ShowInTaskbar = false;
 			this.WindowState = FormWindowState.Minimized;
 			// vHks
-			vHks.Event_Keys += new InputHook.d_KeysEvent( CallBack_KeyboardEvent );
-			vHks.Event_Mouse += new InputHook.d_MouseEvent( CallBack_MouseEvent );
+			vFwl.Show();
+			vHks.Event_Keys += new InputHook.D_KeysEvent( CallBack_KeyboardEvent );
+			vHks.Event_Mouse += new InputHook.D_MouseEvent( CallBack_MouseEvent );
 			//辅助窗口列表
 
 			//this.vId.OnKeyPress += new KeyPressEventHandler( hook_MainKeyPress );//这个接口有点问题,控制台提示程序错误,但不停止运行
@@ -91,7 +94,21 @@ namespace App {
 		/// 单元测试
 		/// </summary>
 		private void UnitTest() {
+			foreach (MouseEventArgs args in vHks.mouse_Move_Record) {
+				Console.WriteLine( args.Location.ToString() );
+			}
+		}
 
+		class MyClass {
+			public string name = "333";
+			public int age = 2;
+
+			public override string ToString() {
+				return new {
+					name,
+					age
+				}.ToString();
+			}
 
 		}
 
@@ -100,19 +117,27 @@ namespace App {
 		/// </summary>
 		/// <param name="Sender">可以忽略</param>
 		/// <param name="key">按键信息</param>
-		public void CallBack_KeyboardEvent(InputHook.Action Sender, KeyEventArgs key) {
+		public void CallBack_KeyboardEvent(InputHook vIh, InputHook.Action Sender) {
+			vFwl.Auxiliary_Window_Handler( vIh, Sender );//传递给视图辅助窗口
+			KeyEventArgs key = vIh.keyboard_Input_Record[0];
+			//如果是按弹起键
 			if (Sender == InputHook.Action.KeyUp && vHks.is_simulated == false) {//使用多线程进行输入辅助处理,不影响主线程
-				new MultiThread_InputAuxiliary( vHks );
-			}
-			System.Threading.Thread.Sleep( 1 );//不加不行
-			if (WindowState == FormWindowState.Normal) { //只有窗口是正常状态才调试输出
-				textBox_foregroundWindowInfo.Text = vHks.window_Info_Foreground.MytoString();
-				Show_HotKeyState();//显示状态键
-				textBox_foregroundWindowInfo.Text = vHks.window_Info_Foreground.MytoString(); //显示前台窗口信息
-																							  //显示鼠标所在窗口信息(按右侧 Alt 显示)
-				if (key.KeyCode == Keys.RMenu && Sender == InputHook.Action.KeyUp) {
-					SetFrom_textBox_windowInfo( vHks.window_Info_Mouse.MytoString() );
+				new MultiThread_InputAuxiliary( vHks );//开新线程辅助输入
 
+			} else {
+
+			}
+			System.Threading.Thread.Sleep( 1 );//不停不行
+
+			if (WindowState == FormWindowState.Normal) { //只有窗口是正常状态才调试输出
+				Show_HotKeyState();//显示状态键
+				if (Sender == InputHook.Action.KeyUp) {
+					textBox_foregroundWindowInfo.Text = vHks.window_Info_Foreground.ToString(); //显示前台窗口信息
+																								//显示鼠标所在窗口信息(按右侧 Alt 显示)
+					if (key.KeyCode == Keys.RMenu && Sender == InputHook.Action.KeyUp) {
+						SetFrom_textBox_windowInfo( vHks.window_Info_Mouse.ToString() );
+
+					}
 				}
 				var v = new {
 					key.KeyValue,
@@ -120,9 +145,10 @@ namespace App {
 					key.Modifiers,
 					key.SuppressKeyPress
 				};
-				textBox_foregroundWindowInfo.Text = vHks.window_Info_Foreground.MytoString();
+				textBox_foregroundWindowInfo.Text = vHks.window_Info_Foreground.ToString();
 
 				LogWrite( Sender + "\t" + v );
+
 			}
 		}
 
@@ -130,12 +156,9 @@ namespace App {
 		/// 鼠标事件处理
 		/// </summary>
 		/// <param name="e">鼠标信息</param>
-		public void CallBack_MouseEvent(MouseEventArgs e) {
+		public void CallBack_MouseEvent(InputHook vIh, MouseEventArgs e) {
+			vFwl.Auxiliary_Window_Handler( vIh, e );//传递给视图辅助窗口
 			vHks.keyStateAll.TryGetValue( Keys.LMenu, out bool is_Press_LAlt );
-
-			if (e.Delta != 0 && is_Press_LAlt) { //如果鼠标滚轮滚动,而且按下 Alt处于按下状态 按键
-				new Activate_Auxiliary_Window( vHks, vAwl );
-			}
 			//只有窗口是正常状态才调试输出
 			if (WindowState == FormWindowState.Normal) {
 				label_MousePosition.Text = string.Format( "x={0}  y={1} wheel={2}", e.X, e.Y, e.Delta );

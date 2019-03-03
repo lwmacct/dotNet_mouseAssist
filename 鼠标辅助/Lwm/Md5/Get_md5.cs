@@ -4,13 +4,14 @@ using System.Text;
 using System;
 using System.IO;
 namespace Lwm.Md5 {
-	public class Get_Md5 {
+	public class Md5 {
 		/// <summary>
 		/// 取 Image md5
 		/// </summary>
 		/// <param name="image"></param>
 		/// <returns></returns>
-		public string Get_imageMd5(Image image) {
+		public static string Get_imageMd5(Image image) {
+
 			MD5 md5 = MD5.Create();
 			byte[] retVal = md5.ComputeHash( ImageToByte( image ) );
 			StringBuilder sb = new StringBuilder();
@@ -24,7 +25,7 @@ namespace Lwm.Md5 {
 		/// </summary>
 		/// <param name="imgPhoto"></param>
 		/// <returns></returns>
-		public byte[] ImageToByte(System.Drawing.Image imgPhoto) {
+		public static byte[] ImageToByte(System.Drawing.Image imgPhoto) {
 			MemoryStream mstream = new MemoryStream();
 			imgPhoto.Save( mstream, System.Drawing.Imaging.ImageFormat.Bmp );
 			byte[] byData = new Byte[mstream.Length];
