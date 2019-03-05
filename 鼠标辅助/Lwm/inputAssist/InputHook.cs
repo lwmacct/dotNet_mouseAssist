@@ -139,22 +139,6 @@ namespace Lwm.inputAssist {
 			/// </summary>
 			KeyUp
 		}
-		/// <summary>
-		/// 安装钩子的枚举
-		/// </summary>
-		public enum IH {
-
-			/// <summary>
-			/// 勾住输入设备
-			/// </summary>
-			HookUp = 0,
-
-			/// <summary>
-			/// 卸载钩子
-			/// </summary>
-			UnLoad,
-
-		}
 
 		#endregion 枚举
 
@@ -190,6 +174,14 @@ namespace Lwm.inputAssist {
 
 		#region 公有方法
 
+
+		/// <summary>
+		/// 解除键盘屏蔽
+		/// </summary>
+		public void Relieve_keyboard_Shield() {
+			vId.InstallHook( 0 );
+		}
+
 		/// <summary>
 		/// 安装钩子
 		/// </summary>
@@ -198,19 +190,20 @@ namespace Lwm.inputAssist {
 		}
 
 		/// <summary>
-		/// 卸载钩子
-		/// </summary>
-		/// <param name="type"></param>
-		public void Hooks_UnLoad() {
-			vId.InstallHook( 0 );
-		}
-
-		/// <summary>
 		/// 屏蔽键盘
 		/// </summary>
 		public void Shield_keyboard() {
 			vId.InstallHook( 2 );
 		}
+
+		/// <summary>
+		/// 卸载钩子
+		/// </summary>
+		/// <param name="type"></param>
+		public void Hooks_UnLoad() {
+			vId.UnInstallHook();
+		}
+
 		#endregion 公有方法
 
 		#region 私有方法
@@ -220,6 +213,7 @@ namespace Lwm.inputAssist {
 		/// </summary>
 		/// <param name="sender"></param>
 		private void CallBack_KeyDown(object sender, KeyEventArgs key) {
+			this.window_Info_Foreground = new Foreground_Window_Info();//更新前台窗口信息
 			this.keyStateAll[key.KeyCode] = true;//设置按键状态
 			Event_Keys( this, Action.KeyDown );//发表事件
 		}
@@ -229,10 +223,9 @@ namespace Lwm.inputAssist {
 		/// </summary>
 		/// <param name="sender"></param>
 		private void CallBack_KeyUp(object sender, KeyEventArgs key) {
-			this.keyStateAll[key.KeyCode] = false;//设置按键状态
+			keyStateAll[key.KeyCode] = false;//设置按键状态
 			keyboard_Input_Record.Insert( 0, key );//设置输入记录
-			keyboard_Input_Record.RemoveAt(32);//只保留32个
-			this.window_Info_Foreground = new Foreground_Window_Info();//更新前台窗口信息
+			keyboard_Input_Record.RemoveAt( 32 );//只保留32个
 			Event_Keys( this, Action.KeyUp );//发表事件
 		}
 
@@ -243,7 +236,7 @@ namespace Lwm.inputAssist {
 		/// <param name="e"></param>
 		private void CallBack_MouseMove(object sender, MouseEventArgs e) {
 			mouse_Move_Record.Insert( 0, e );//记录鼠标轨迹
-			mouse_Move_Record.RemoveAt(32);//只保留32个
+			mouse_Move_Record.RemoveAt( 32 );//只保留32个
 			this.window_Info_Mouse = new Mouse_Window_Info( e.Location );//更新鼠标所在窗口信息
 			Event_Mouse( this, e );//发表事件
 
@@ -256,12 +249,12 @@ namespace Lwm.inputAssist {
 		/// <summary>
 		/// 键盘输入记录
 		/// </summary>
-		public List<KeyEventArgs> keyboard_Input_Record=new List<KeyEventArgs>();
+		public List<KeyEventArgs> keyboard_Input_Record = new List<KeyEventArgs>();
 
 		/// <summary>
 		/// 鼠标移动记录
 		/// </summary>
-		public List<MouseEventArgs> mouse_Move_Record=new List<MouseEventArgs>();
+		public List<MouseEventArgs> mouse_Move_Record = new List<MouseEventArgs>();
 
 		/// <summary>S
 		/// 前台窗口信息

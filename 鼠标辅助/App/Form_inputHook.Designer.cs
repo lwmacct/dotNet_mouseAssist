@@ -24,9 +24,9 @@
 		/// </summary>
 		private void InitializeComponent() {
 			this.label_MousePosition = new System.Windows.Forms.Label();
-			this.button_stopkeyboard = new System.Windows.Forms.Button();
+			this.button_shield_keyboard = new System.Windows.Forms.Button();
 			this.textBox_resultinfo = new System.Windows.Forms.TextBox();
-			this.button_stop = new System.Windows.Forms.Button();
+			this.button_relieve_keyboard_shield = new System.Windows.Forms.Button();
 			this.button_start = new System.Windows.Forms.Button();
 			this.button_truncate = new System.Windows.Forms.Button();
 			this.lable_state_Shift = new System.Windows.Forms.Label();
@@ -38,6 +38,7 @@
 			this.panel_funcButton = new System.Windows.Forms.Panel();
 			this.panel_lables = new System.Windows.Forms.Panel();
 			this.textBox_foregroundWindowInfo = new System.Windows.Forms.TextBox();
+			this.button_stop = new System.Windows.Forms.Button();
 			this.panel_funcButton.SuspendLayout();
 			this.panel_lables.SuspendLayout();
 			this.SuspendLayout();
@@ -55,16 +56,16 @@
 			this.label_MousePosition.Text = "移动鼠标以便查看效果";
 			this.label_MousePosition.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 			// 
-			// button_stopkeyboard
+			// button_shield_keyboard
 			// 
-			this.button_stopkeyboard.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.button_stopkeyboard.Location = new System.Drawing.Point(168, 6);
-			this.button_stopkeyboard.Name = "button_stopkeyboard";
-			this.button_stopkeyboard.Size = new System.Drawing.Size(75, 37);
-			this.button_stopkeyboard.TabIndex = 8;
-			this.button_stopkeyboard.Text = "屏蔽键盘";
-			this.button_stopkeyboard.UseVisualStyleBackColor = true;
-			this.button_stopkeyboard.Click += new System.EventHandler(this.Button_Click);
+			this.button_shield_keyboard.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.button_shield_keyboard.Location = new System.Drawing.Point(220, 6);
+			this.button_shield_keyboard.Name = "button_shield_keyboard";
+			this.button_shield_keyboard.Size = new System.Drawing.Size(75, 37);
+			this.button_shield_keyboard.TabIndex = 8;
+			this.button_shield_keyboard.Text = "屏蔽键盘";
+			this.button_shield_keyboard.UseVisualStyleBackColor = true;
+			this.button_shield_keyboard.Click += new System.EventHandler(this.Button_Click);
 			// 
 			// textBox_resultinfo
 			// 
@@ -80,16 +81,16 @@
 			this.textBox_resultinfo.TabIndex = 7;
 			this.textBox_resultinfo.WordWrap = false;
 			// 
-			// button_stop
+			// button_relieve_keyboard_shield
 			// 
-			this.button_stop.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.button_stop.Location = new System.Drawing.Point(87, 6);
-			this.button_stop.Name = "button_stop";
-			this.button_stop.Size = new System.Drawing.Size(75, 37);
-			this.button_stop.TabIndex = 6;
-			this.button_stop.Text = "恢复正常";
-			this.button_stop.UseVisualStyleBackColor = true;
-			this.button_stop.Click += new System.EventHandler(this.Button_Click);
+			this.button_relieve_keyboard_shield.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.button_relieve_keyboard_shield.Location = new System.Drawing.Point(301, 6);
+			this.button_relieve_keyboard_shield.Name = "button_relieve_keyboard_shield";
+			this.button_relieve_keyboard_shield.Size = new System.Drawing.Size(75, 37);
+			this.button_relieve_keyboard_shield.TabIndex = 6;
+			this.button_relieve_keyboard_shield.Text = "恢复正常";
+			this.button_relieve_keyboard_shield.UseVisualStyleBackColor = true;
+			this.button_relieve_keyboard_shield.Click += new System.EventHandler(this.Button_Click);
 			// 
 			// button_start
 			// 
@@ -98,14 +99,14 @@
 			this.button_start.Name = "button_start";
 			this.button_start.Size = new System.Drawing.Size(75, 37);
 			this.button_start.TabIndex = 5;
-			this.button_start.Text = "开始监控";
+			this.button_start.Text = "安装钩子";
 			this.button_start.UseVisualStyleBackColor = true;
 			this.button_start.Click += new System.EventHandler(this.Button_Click);
 			// 
 			// button_truncate
 			// 
 			this.button_truncate.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.button_truncate.Location = new System.Drawing.Point(249, 6);
+			this.button_truncate.Location = new System.Drawing.Point(469, 6);
 			this.button_truncate.Name = "button_truncate";
 			this.button_truncate.Size = new System.Drawing.Size(75, 37);
 			this.button_truncate.TabIndex = 10;
@@ -155,7 +156,7 @@
 			// button_unitTest
 			// 
 			this.button_unitTest.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.button_unitTest.Location = new System.Drawing.Point(554, 6);
+			this.button_unitTest.Location = new System.Drawing.Point(631, 6);
 			this.button_unitTest.Name = "button_unitTest";
 			this.button_unitTest.Size = new System.Drawing.Size(75, 37);
 			this.button_unitTest.TabIndex = 14;
@@ -180,7 +181,7 @@
 			// button_setTopTier
 			// 
 			this.button_setTopTier.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-			this.button_setTopTier.Location = new System.Drawing.Point(330, 6);
+			this.button_setTopTier.Location = new System.Drawing.Point(550, 6);
 			this.button_setTopTier.Name = "button_setTopTier";
 			this.button_setTopTier.Size = new System.Drawing.Size(75, 37);
 			this.button_setTopTier.TabIndex = 16;
@@ -191,10 +192,11 @@
 			// panel_funcButton
 			// 
 			this.panel_funcButton.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.panel_funcButton.Controls.Add(this.button_stop);
 			this.panel_funcButton.Controls.Add(this.button_start);
 			this.panel_funcButton.Controls.Add(this.button_setTopTier);
-			this.panel_funcButton.Controls.Add(this.button_stop);
-			this.panel_funcButton.Controls.Add(this.button_stopkeyboard);
+			this.panel_funcButton.Controls.Add(this.button_relieve_keyboard_shield);
+			this.panel_funcButton.Controls.Add(this.button_shield_keyboard);
 			this.panel_funcButton.Controls.Add(this.button_unitTest);
 			this.panel_funcButton.Controls.Add(this.button_truncate);
 			this.panel_funcButton.Location = new System.Drawing.Point(9, 9);
@@ -230,6 +232,17 @@
 			this.textBox_foregroundWindowInfo.TabIndex = 19;
 			this.textBox_foregroundWindowInfo.WordWrap = false;
 			// 
+			// button_stop
+			// 
+			this.button_stop.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+			this.button_stop.Location = new System.Drawing.Point(87, 6);
+			this.button_stop.Name = "button_stop";
+			this.button_stop.Size = new System.Drawing.Size(75, 37);
+			this.button_stop.TabIndex = 17;
+			this.button_stop.Text = "卸载钩子";
+			this.button_stop.UseVisualStyleBackColor = true;
+			this.button_stop.Click += new System.EventHandler(this.Button_Click);
+			// 
 			// Form_inputHook
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -252,9 +265,9 @@
 		}
 
 		#endregion
-		private System.Windows.Forms.Button button_stopkeyboard;
+		private System.Windows.Forms.Button button_shield_keyboard;
 		private System.Windows.Forms.TextBox textBox_resultinfo;
-		private System.Windows.Forms.Button button_stop;
+		private System.Windows.Forms.Button button_relieve_keyboard_shield;
 		private System.Windows.Forms.Button button_start;
 		private System.Windows.Forms.Button button_truncate;
 		private System.Windows.Forms.Button button_unitTest;
@@ -267,5 +280,6 @@
 		public System.Windows.Forms.Label lable_state_Ctrl;
 		public System.Windows.Forms.Label lable_state_Alt;
 		private System.Windows.Forms.TextBox textBox_foregroundWindowInfo;
+		private System.Windows.Forms.Button button_stop;
 	}
 }

@@ -26,10 +26,10 @@
 			this.components = new System.ComponentModel.Container();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form_Main));
 			this.panel_windowAll = new System.Windows.Forms.Panel();
+			this.button_inputHook = new System.Windows.Forms.Button();
 			this.notifyIcon_MainTray = new System.Windows.Forms.NotifyIcon(this.components);
 			this.contextMenuStrip_Maintray = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.退出ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.button_inputHook = new System.Windows.Forms.Button();
 			this.panel_windowAll.SuspendLayout();
 			this.contextMenuStrip_Maintray.SuspendLayout();
 			this.SuspendLayout();
@@ -41,6 +41,16 @@
 			this.panel_windowAll.Name = "panel_windowAll";
 			this.panel_windowAll.Size = new System.Drawing.Size(878, 134);
 			this.panel_windowAll.TabIndex = 0;
+			// 
+			// button_inputHook
+			// 
+			this.button_inputHook.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+			this.button_inputHook.Location = new System.Drawing.Point(3, 0);
+			this.button_inputHook.Name = "button_inputHook";
+			this.button_inputHook.Size = new System.Drawing.Size(121, 47);
+			this.button_inputHook.TabIndex = 0;
+			this.button_inputHook.Text = "button1";
+			this.button_inputHook.UseVisualStyleBackColor = true;
 			// 
 			// notifyIcon_MainTray
 			// 
@@ -54,24 +64,14 @@
 			this.contextMenuStrip_Maintray.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.退出ToolStripMenuItem});
 			this.contextMenuStrip_Maintray.Name = "contextMenuStrip_Maintray";
-			this.contextMenuStrip_Maintray.Size = new System.Drawing.Size(181, 50);
+			this.contextMenuStrip_Maintray.Size = new System.Drawing.Size(107, 28);
 			// 
 			// 退出ToolStripMenuItem
 			// 
 			this.退出ToolStripMenuItem.Name = "退出ToolStripMenuItem";
-			this.退出ToolStripMenuItem.Size = new System.Drawing.Size(180, 24);
+			this.退出ToolStripMenuItem.Size = new System.Drawing.Size(106, 24);
 			this.退出ToolStripMenuItem.Text = "退出";
 			this.退出ToolStripMenuItem.Click += new System.EventHandler(this.ToolStripMenuItem_Click);
-			// 
-			// button_inputHook
-			// 
-			this.button_inputHook.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-			this.button_inputHook.Location = new System.Drawing.Point(3, 0);
-			this.button_inputHook.Name = "button_inputHook";
-			this.button_inputHook.Size = new System.Drawing.Size(121, 47);
-			this.button_inputHook.TabIndex = 0;
-			this.button_inputHook.Text = "button1";
-			this.button_inputHook.UseVisualStyleBackColor = true;
 			// 
 			// Form_Main
 			// 

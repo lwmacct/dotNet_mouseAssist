@@ -85,6 +85,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App\GlobalVar.cs" />
+    <Compile Include="Lwm\CustomControls\Controls_FlpList.cs" />
+    <Compile Include="Lwm\inputAssist\Software_Hotkey.cs" />
     <Compile Include="Lwm\MyConvert\ImageToByte.cs" />
     <Compile Include="Lwm\Md5\Get_md5.cs" />
     <Compile Include="Lwm\ScreenShot\ScreenCapture.cs" />
@@ -96,12 +98,7 @@
     <Compile Include="App\Form_hotKeyReg\HotKeys.cs" />
     <Compile Include="Lwm\inputAssist\Assist_phpstorm.cs" />
     <Compile Include="Lwm\inputAssist\InputHook.cs" />
-    <Compile Include="App\MouseAuxiliary\Form_Auxiliary_Window.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="App\MouseAuxiliary\Form_Auxiliary_Window.Designer.cs">
-      <DependentUpon>Form_Auxiliary_Window.cs</DependentUpon>
-    </Compile>
+    <Compile Include="App\MouseAuxiliary\Form_Auxiliary_Window.cs" />
     <Compile Include="App\Form_hotKeyReg.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -120,6 +117,9 @@
     <Compile Include="App\Form_Main.Designer.cs">
       <DependentUpon>Form_Main.cs</DependentUpon>
     </Compile>
+    <Compile Include="Lwm\Wondow\New_Window.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Properties\Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -137,9 +137,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="App\Form_inputHook.resx">
       <DependentUpon>Form_inputHook.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="App\MouseAuxiliary\Form_Auxiliary_Window.resx">
-      <DependentUpon>Form_Auxiliary_Window.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="App\Form_Main.resx">
       <DependentUpon>Form_Main.cs</DependentUpon>

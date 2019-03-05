@@ -32,11 +32,11 @@ namespace App {
 		public Form_inputHook() {
 			InitializeComponent();
 			//init 窗口
-			this.ShowInTaskbar = false;
-			this.WindowState = FormWindowState.Minimized;
+			//this.ShowInTaskbar = false;
+			//this.WindowState = FormWindowState.Minimized;
 			//vFwl.Show();
 			// vHks
-			
+
 			vHks.Event_Keys += new InputHook.D_KeysEvent( CallBack_KeyboardEvent );
 			vHks.Event_Mouse += new InputHook.D_MouseEvent( CallBack_MouseEvent );
 			//辅助窗口列表
@@ -64,9 +64,13 @@ namespace App {
 					break;
 				case "button_stop"://停止监控
 					vHks.Hooks_UnLoad();
+
 					break;
-				case "button_stopkeyboard"://屏蔽键盘
+				case "button_shield_keyboard"://屏蔽键盘
 					vHks.Shield_keyboard();
+					break;
+				case "button_relieve_keyboard_shield"://解除键盘
+					vHks.Relieve_keyboard_Shield();
 					break;
 				case "button_truncate"://清空按钮
 					textBox_resultinfo.Text = "";
@@ -95,21 +99,6 @@ namespace App {
 		/// 单元测试
 		/// </summary>
 		private void UnitTest() {
-			foreach (MouseEventArgs args in vHks.mouse_Move_Record) {
-				Console.WriteLine( args.Location.ToString() );
-			}
-		}
-
-		class MyClass {
-			public string name = "333";
-			public int age = 2;
-
-			public override string ToString() {
-				return new {
-					name,
-					age
-				}.ToString();
-			}
 
 		}
 
@@ -120,24 +109,26 @@ namespace App {
 		/// <param name="key">按键信息</param>
 		public void CallBack_KeyboardEvent(InputHook vIh, InputHook.Action Sender) {
 			vFwl.Auxiliary_Window_Handler( vIh, Sender );//传递给视图辅助窗口
+
 			KeyEventArgs key = vIh.keyboard_Input_Record[0];
 			//如果是按弹起键
 			if (Sender == InputHook.Action.KeyUp && vHks.is_simulated == false) {//使用多线程进行输入辅助处理,不影响主线程
 				new MultiThread_InputAuxiliary( vHks );//开新线程辅助输入
 
-			} else {
-
 			}
+
 			System.Threading.Thread.Sleep( 1 );//不停不行
 
 			if (WindowState == FormWindowState.Normal) { //只有窗口是正常状态才调试输出
 				Show_HotKeyState();//显示状态键
 				if (Sender == InputHook.Action.KeyUp) {
 					textBox_foregroundWindowInfo.Text = vHks.window_Info_Foreground.ToString(); //显示前台窗口信息
-																								//显示鼠标所在窗口信息(按右侧 Alt 显示)
+					
+					//显示鼠标所在窗口信息(按右侧 Alt 显示)
 					if (key.KeyCode == Keys.RMenu && Sender == InputHook.Action.KeyUp) {
 						SetFrom_textBox_windowInfo( vHks.window_Info_Mouse.ToString() );
-
+						Console.WriteLine(vHks.window_Info_Foreground.title);
+						Console.WriteLine(vHks.window_Info_Foreground.className);
 					}
 				}
 				var v = new {
@@ -195,8 +186,5 @@ namespace App {
 			lable_state_Ctrl.Text = "Ctrl 键状态 " + vHks.keyStateAll[Keys.LControlKey];
 			lable_state_Shift.Text = "Shift 键状态 " + vHks.keyStateAll[Keys.LShiftKey];
 		}
-
-
-
 	}
 }
