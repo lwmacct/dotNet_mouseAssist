@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Lwm.CustomControls {
+namespace Lwm.Controls {
 	/// <summary>
 	/// 基于 FlowLayoutPanel 的列表
 	/// </summary>
@@ -24,7 +24,6 @@ namespace Lwm.CustomControls {
 
 
 		#endregion 私有变量
-
 
 		/// <summary>
 		/// 基于 FlowLayoutPanel 的 列表
@@ -45,7 +44,6 @@ namespace Lwm.CustomControls {
 			set {
 				//如果索引不超出
 				if (value < recordAll.Count && recordAll.Count != 0) {
-					Console.WriteLine( Selected_Index.Equals( 0 ) );
 					recordAll[selected_Index].vContainer.BackColor = System.Drawing.SystemColors.Control;//还原上一次的	
 																										 //设置本次记录
 					recordAll[value].vContainer.BackColor = System.Drawing.SystemColors.ActiveBorder;//设置新的

@@ -1,5 +1,9 @@
-﻿using System;
+﻿using Lwm.Json;
+using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -9,6 +13,7 @@ namespace Lwm.inputAssist {
 	/// <summary>
 	/// 软件热键类
 	/// </summary>
+	[DataContract]
 	public class Software_Hotkey {
 
 		#region 子类
@@ -16,60 +21,79 @@ namespace Lwm.inputAssist {
 		/// <summary>
 		/// 构造函数时的配置类
 		/// </summary>
-		public class Config {
+		[DataContract]
+		public class Setting {
 			/// <summary>
-			/// 正则表达式
+			/// 软件名称
 			/// </summary>
-			public string title_regexMatch;
+			[DataMember( IsRequired = true )]
+			public string softwareName="";
 
 			/// <summary>
-			/// 匹配到的分组
+			/// 窗口标题 正则表达式
 			/// </summary>
-			public int title_MatchGroup;
-
-			/// <summary>
-			/// 匹配到的值
-			/// </summary>
-			public string title_MatchValue;
-
-			/// <summary>
-			/// 正则表达式
-			/// </summary>
-			public string class_regexMatch;
+			[DataMember( IsRequired = true )]
+			public string title_regexMatch="";
 
 			/// <summary>
 			/// 匹配到的分组
 			/// </summary>
-			public int class_MatchGroup;
+			[DataMember( IsRequired = true )]
+			public int title_MatchGroup=0;
 
 			/// <summary>
 			/// 匹配到的值
 			/// </summary>
-			public string class_MatchValue;
+			[DataMember( IsRequired = true )]
+			public string title_MatchValue="";
 
-			public Config(string title_regexMatch, int title_MatchGroup, string title_MatchValue, string class_regexMatch = null, int class_MatchGroup = 0, string class_MatchValue = null) {
-				this.title_MatchGroup = title_MatchGroup;
-				this.title_regexMatch = title_regexMatch;
-				this.title_MatchValue = title_MatchValue;
-				this.class_MatchGroup = class_MatchGroup;
-				this.class_regexMatch = class_regexMatch;
-				this.class_MatchValue = class_MatchValue;
+			/// <summary>
+			/// 窗口类名 正则表达式,不需要验证类名无需填写
+			/// </summary>
+			[DataMember( IsRequired = true )]
+			public string class_regexMatch="";
 
-			}
+			/// <summary>
+			/// 窗口类名 匹配到的分组
+			/// </summary>
+			[DataMember( IsRequired = true )]
+			public int class_MatchGroup=0;
+
+			/// <summary>
+			/// 窗口类名 匹配到的值
+			/// </summary>
+			[DataMember( IsRequired = true )]
+			public string class_MatchValue="";
+
 		}
 
 		/// <summary>
 		/// 提供用于管理当前类的子类
 		/// </summary>
 		public class Manage {
-			private List<Software_Hotkey> Software_Hotkey_List = new List<Software_Hotkey>();
 
 			/// <summary>
-			/// 添加一个软件的鼠标热键辅助
+			/// 热键列表
 			/// </summary>
-			/// <param name="vSh"></param>
-			public void Add_Software_Hotkey_List(Software_Hotkey vSh) {
-				Software_Hotkey_List.Add( vSh );
+			public List<Software_Hotkey> Software_Hotkey_List = new List<Software_Hotkey>();
+
+			
+			/// <summary>
+			/// 加载配置
+			/// </summary>
+			/// <param name="filePath"></param>
+			public void Load_Config(string filePath = @"Config\Software_Config_List.json") {
+				String content = File.ReadAllText( filePath );
+				Software_Hotkey_List = JSON.parse<List<Software_Hotkey>>( content );
+			}
+
+			/// <summary>
+			/// 保存配置
+			/// </summary>
+			/// <param name="filePath"></param>
+			public void Save_Config(string filePath = @"Config\Software_Config_List.json") {
+				String content = JSON.stringify( Software_Hotkey_List );
+				File.WriteAllText( @"Config\Software_Config_List.json", content );
 			}
 
 			/// <summary>
@@ -78,7 +102,7 @@ namespace Lwm.inputAssist {
 			/// <param name="window_titleName">窗口标题</param>
 			/// <param name="window_className">窗口类名</param>
 			/// <returns></returns>
-			public HotKey_Execute Trigger_Next(string window_titleName, string window_className) {
+			public HotKey_Execute Get_Next(string window_titleName, string window_className) {
 				HotKey_Execute ret = null;
 				for (var i = 0; i < Software_Hotkey_List.Count; i++) {
 					if (Software_Hotkey_List[i].Perform_Matching( window_titleName, window_className )) {
@@ -95,7 +119,7 @@ namespace Lwm.inputAssist {
 			/// <param name="window_titleName">窗口标题</param>
 			/// <param name="window_className">窗口类名</param>
 			/// <returns></returns>
-			public HotKey_Execute Trigger_Last(string window_titleName, string window_className) {
+			public HotKey_Execute Get_Last(string window_titleName, string window_className) {
 				HotKey_Execute ret = null;
 				for (var i = 0; i < Software_Hotkey_List.Count; i++) {
 					if (Software_Hotkey_List[i].Perform_Matching( window_titleName, window_className )) {
@@ -105,11 +129,30 @@ namespace Lwm.inputAssist {
 				}
 				return ret;
 			}
+
+
+			/// <summary>
+			/// 取得软件 快捷键列表 key_List(相当于右键菜单列表)
+			/// </summary>
+			/// <param name="window_titleName">窗口标题</param>
+			/// <param name="window_className">窗口类名</param>
+			/// <returns></returns>
+			public List<HotKey_Execute> Get_Key_List(string window_titleName, string window_className) {
+
+				List<HotKey_Execute> ret = new List<HotKey_Execute>();
+				for (var i = 0; i < Software_Hotkey_List.Count; i++) {
+					if (Software_Hotkey_List[i].Perform_Matching( window_titleName, window_className )) {
+						ret = Software_Hotkey_List[i].key_List;
+					}
+				}
+				return ret;
+			}
 		}
 
 		/// <summary>
 		/// 热键执行类
 		/// </summary>
+		[DataContract]
 		public class HotKey_Execute {
 			/// <summary>
 			/// 模拟键盘的方法
@@ -121,21 +164,67 @@ namespace Lwm.inputAssist {
 			[System.Runtime.InteropServices.DllImport( "user32.dll" )]
 			public static extern void keybd_event(byte bVk, byte bScan, int dwFlags, int dwExtraInfo);
 
+			/// <summary>
+			///组合键数据
+			/// </summary>
+			[DataMember( IsRequired = true )]
+			public List<Keys> HotKey = new List<Keys>();
 
-			private readonly List<Keys> HotKey = new List<Keys>();
+			/// <summary>
+			/// 注释
+			/// </summary>
+			[DataMember( IsRequired = true )]
+			public string comment = "";
+
+			/// <summary>
+			/// 组合键的文本表示
+			/// </summary>
+			public string Key_Text {
+				get { return Create_Key_Text(); }
+			}
 
 			/// <summary>
 			/// 开始执行热键
 			/// </summary>
-			public void Execute() {
+			/// <param name="is_simulated">用于标记为已模拟完成</param>
+			public void Execute(Boolean[] is_simulated) {
 
-				//我们需要开一个新线程来执行,避免执行下面这句的时候 ctrl 按键还是按着的
+				//我们需要开一个新线程来执行,避免执行下面这句的时候 Alt 按键还是按着的
 				new Thread( new ThreadStart( () => {
-					//System.Threading.Thread.Sleep( 1 );
-					Dowm_Or_Up( 0 );//按下
-					Dowm_Or_Up( 2 );//弹起
+					//System.Threading.Thread.Sleep( 0 );
+
+					//如果是右键菜单触发就需要先取出 软件 Alt 状态
+					if (is_simulated[1] == false) {
+						//解除应用的 Alt 按下状态
+						keybd_event( (byte)Keys.LMenu, 0, 0, 0 );
+						keybd_event( (byte)Keys.LMenu, 0, 2, 0 );
+					}
+
+					Execute_Dowm();//按下
+					Execute_Up();//弹起
+
+					is_simulated[0] = false;//设置为未在模拟状态
+
 				} ) ).Start();
 
+			}
+
+			/// <summary>
+			/// 执行按下 按顺序按下
+			/// </summary>
+			public void Execute_Dowm() {
+				for (var i = 0; i < this.HotKey.Count; i++) {
+					keybd_event( (byte)HotKey[i], 0, 0, 0 );
+				}
+			}
+
+			/// <summary>
+			/// 执行弹起 弹起的时候返过来弹起
+			/// </summary>
+			public void Execute_Up() {
+				for (var i = this.HotKey.Count - 1; i >= 0; i--) {
+					keybd_event( (byte)HotKey[i], 0, 2, 0 );
+				}
 			}
 
 			/// <summary>
@@ -158,40 +247,42 @@ namespace Lwm.inputAssist {
 				HotKey.Clear();
 			}
 
-
-			/// <summary>
-			/// 注释
-			/// </summary>
-			public string comment = "";
-
-			/// <summary>
-			/// 组合键的文本表示
-			/// </summary>
-			public string Key_Text {
-				get { return Create_Key_Text(); }
-			}
-
 			/// <summary>
 			/// 创建组合键的文本表示
 			/// </summary>
 			/// <returns></returns>
 			private string Create_Key_Text() {
-				StringBuilder str = new StringBuilder();
+				List<string> str = new List<string>();
 				for (var i = 0; i < HotKey.Count; i++) {
-					str.Append( " + " + HotKey[i].ToString() );
+					str.Add( To_Normal_key( HotKey[i] ) );
 				}
-				return str.ToString();
+
+				return string.Join( " + ", str.ToArray() );
+			}
+			/// <summary>
+			/// 将 LshiftKey 之类的文本转为 Shift
+			/// </summary>
+			/// <param name="str"></param>
+			private string To_Normal_key(Keys key) {
+				string str = key.ToString();
+				switch (key) {
+					case Keys.LShiftKey:
+					case Keys.RShiftKey:
+						str = "Shift";
+						break;
+					case Keys.LControlKey:
+					case Keys.RControlKey:
+						str = "Ctrl";
+						break;
+					case Keys.LMenu:
+					case Keys.RMenu:
+						str = "Alt";
+						break;
+
+				}
+				return str;
 			}
 
-			/// <summary>
-			/// 执行 按下或弹起
-			/// </summary>
-			/// <param name="dwFlags"></param>
-			private void Dowm_Or_Up(int dwFlags) {
-				for (var i = 0; i < this.HotKey.Count; i++) {
-					keybd_event( (byte)HotKey[i], 0, dwFlags, 0 );
-				}
-			}
 
 		}
 
@@ -200,29 +291,33 @@ namespace Lwm.inputAssist {
 		/// <summary>
 		/// 构造函数时的配置
 		/// </summary>
-		private Config config;
+		[DataMember( IsRequired = true )]
+		public Setting setting;
 
 		/// <summary>
 		/// 滚轮快捷键列表
 		/// </summary>
-		private List<HotKey_Execute> key_List = new List<HotKey_Execute>();
+		[DataMember( IsRequired = true )]
+		public List<HotKey_Execute> key_List = new List<HotKey_Execute>();
 
 
 		/// <summary>
 		/// 鼠标辅助键 上一个 
 		/// </summary>
+		[DataMember( IsRequired = true )]
 		public HotKey_Execute last = new HotKey_Execute();
 
 		/// <summary>
 		/// 鼠标辅助键 下一个 
 		/// </summary>
+		[DataMember( IsRequired = true )]
 		public HotKey_Execute next = new HotKey_Execute();
 
 		/// <summary>
 		/// 添加列表快捷键
 		/// </summary>
 		/// <param name="hotkey">热键组合</param>
-		public void Add_Menu_Key(HotKey_Execute hotkey) {
+		public void Add_Key_List(HotKey_Execute hotkey) {
 			key_List.Add( hotkey );
 		}
 
@@ -231,25 +326,25 @@ namespace Lwm.inputAssist {
 		/// </summary>
 		/// <returns></returns>
 		public Boolean Perform_Matching(string window_title, string window_class) {
-			Match mat_title = Regex.Match( window_title, config.title_regexMatch );//标题正则
+			Match mat_title = Regex.Match( window_title, setting.title_regexMatch );//标题正则
 			Match mat_class;//类名正则
 			Boolean title_bool = false;//标题是否匹配成功
 			Boolean class_bool = false;//类名是否匹配成功
 			Boolean ret_bool = false;//最终匹配结果
 
 			//匹配标题
-			if (mat_title.Groups.Count >= config.title_MatchGroup) {
-				if (mat_title.Groups[config.title_MatchGroup].Value == config.title_MatchValue) {
+			if (mat_title.Groups.Count >= setting.title_MatchGroup) {
+				if (mat_title.Groups[setting.title_MatchGroup].Value == setting.title_MatchValue) {
 					title_bool = true;
 				}
 			}
 
 			//如果要求类名匹配
-			if (config.class_regexMatch != null) {
-				mat_class = Regex.Match( window_class, config.class_regexMatch );
+			if (setting.class_regexMatch != null) {
+				mat_class = Regex.Match( window_class, setting.class_regexMatch );
 				//匹配标题
-				if (mat_class.Groups.Count >= config.class_MatchGroup) {
-					if (mat_class.Groups[config.class_MatchGroup].Value == config.class_MatchValue) {
+				if (mat_class.Groups.Count >= setting.class_MatchGroup) {
+					if (mat_class.Groups[setting.class_MatchGroup].Value == setting.class_MatchValue) {
 						class_bool = true;
 					}
 				}
@@ -261,12 +356,11 @@ namespace Lwm.inputAssist {
 			if (class_bool && title_bool) {
 				ret_bool = true;
 			}
-			Console.WriteLine( ret_bool );
 			return ret_bool;
 		}
 
-		public Software_Hotkey(Config config) {
-			this.config = config;
+		public Software_Hotkey(Setting setting) {
+			this.setting = setting;
 		}
 	}
 }
