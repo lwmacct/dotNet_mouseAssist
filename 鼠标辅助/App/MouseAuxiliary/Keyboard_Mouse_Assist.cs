@@ -133,10 +133,10 @@ namespace App {
 				v_ih.keyStateAll[Keys.LMenu] == true &&
 				course.be_execute == false) {
 
-				course.handle = v_ih.window_Info_Mouse.IntPtr;//设置鼠标所在窗口句柄
-				course.titleName = v_ih.window_Info_Foreground.title.ToString();
-				course.className = v_ih.window_Info_Foreground.className.ToString();
 
+				course.Handle = v_ih.window_Info_Mouse.Root_IntPtr;//设置鼠标所在窗口句柄
+				course.titleName = v_ih.window_Info_Mouse.Root_title.ToString();
+				course.className = v_ih.window_Info_Mouse.Root_className.ToString();
 				//减号
 				if (v_ih.keyStateAll[Keys.Subtract]) {
 					course.be_execute = true;//标记为正在处理
@@ -199,6 +199,8 @@ namespace App {
 											  //开始模拟,模拟过程是新线程,把 is_simulated 传过去是方便在新线程中取消正在模拟状态
 					up_Alt_Execute_HotKey.Execute( course );
 					up_Alt_Execute_HotKey = null;
+				} else {
+					course.Reinit();//没有要执行的键就重新初始化
 				}
 			}
 		}
@@ -211,8 +213,9 @@ namespace App {
 			//如果鼠标左键等于按下状态并且鼠标滚轮有滚动,并且不再模拟状态
 			if (v_ih.keyStateAll[Keys.LMenu] == true && mea.Delta != 0 && course.be_simulate == false) {
 
-				course.handle = v_ih.window_Info_Mouse.IntPtr;//设置鼠标所在窗口句柄
-
+				if (course.is_Lock_Handle == false) {
+					course.Handle = v_ih.window_Info_Mouse.Root_IntPtr;//设置鼠标所在窗口句柄
+				}
 				//如果窗口已被销毁
 				if (new_Window == null) {
 					new_Window = new New_Window( new New_Window.Attr_C() { width = new_window_width } );
@@ -221,10 +224,11 @@ namespace App {
 					new_Window.Opacity = 0.65;
 					flpList = new Controls_FlpList( new Controls_FlpList.Attr_C() { width = new_window_width } );
 
-					string titleName = v_ih.window_Info_Foreground.title.ToString();
-					string className = v_ih.window_Info_Foreground.className.ToString();
-					vHe_Lisy = vShm.Get_Key_List( titleName, className );
+					course.titleName = v_ih.window_Info_Mouse.Root_title.ToString();
+					course.className = v_ih.window_Info_Mouse.Root_className.ToString();
+					vHe_Lisy = vShm.Get_Key_List( course.titleName, course.className );
 
+					Console.WriteLine(course);
 					for (int i = 0; i < vHe_Lisy.Count; i++) {
 						flpList.Add_Record( vHe_Lisy[i].Key_Text, vHe_Lisy[i].comment );
 					}
@@ -244,7 +248,7 @@ namespace App {
 						mea.Location.Y - 10
 					);
 
-					new_Window.Text = v_ih.window_Info_Foreground.title.ToString();//设置窗口标题
+					new_Window.Text = v_ih.window_Info_Mouse.title.ToString();//设置窗口标题
 					new_Window.Show();//显示窗口
 					SwitchToThisWindow( new_Window.Handle, true );//窗口置顶
 				}

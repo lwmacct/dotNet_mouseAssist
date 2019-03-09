@@ -42,12 +42,12 @@ namespace Lwm.ScreenShot {
 		 );
 		[DllImport( "gdi32.dll" )]
 		private static extern int BitBlt(
-			 IntPtr hdcDest, // handle to destination DC目标设备的句柄
+			 IntPtr hdcDest, // Handle to destination DC目标设备的句柄
 			 int nXDest,   // x-coord of destination upper-left corner目标对象的左上角的X坐标
 			 int nYDest,   // y-coord of destination upper-left corner目标对象的左上角的Y坐标
 			 int nWidth,   // width of destination rectangle目标对象的矩形宽度
 			 int nHeight, // height of destination rectangle目标对象的矩形长度
-			 IntPtr hdcSrc,   // handle to source DC源设备的句柄
+			 IntPtr hdcSrc,   // Handle to source DC源设备的句柄
 			 int nXSrc,    // x-coordinate of source upper-left corner源对象的左上角的X坐标
 			 int nYSrc,    // y-coordinate of source upper-left corner源对象的左上角的Y坐标
 			 CopyPixelOperation dwRop   // raster operation code光栅的操作值
@@ -57,22 +57,22 @@ namespace Lwm.ScreenShot {
 
 		[DllImport( "gdi32.dll" )]
 		private static extern IntPtr CreateCompatibleDC(
-		 IntPtr hdc // handle to DC
+		 IntPtr hdc // Handle to DC
 		 );
 		[DllImport( "gdi32.dll" )]
 		private static extern IntPtr CreateCompatibleBitmap(
-			 IntPtr hdc,         // handle to DC
+			 IntPtr hdc,         // Handle to DC
 			 int nWidth,      // width of bitmap, in pixels
 			 int nHeight      // height of bitmap, in pixels
 		 );
 		[DllImport( "gdi32.dll" )]
 		private static extern IntPtr SelectObject(
-			 IntPtr hdc,           // handle to DC
-			 IntPtr hgdiobj    // handle to object
+			 IntPtr hdc,           // Handle to DC
+			 IntPtr hgdiobj    // Handle to object
 		 );
 		[DllImport( "gdi32.dll" )]
 		private static extern int DeleteDC(
-			IntPtr hdc           // handle to DC
+			IntPtr hdc           // Handle to DC
 		 );
 
 

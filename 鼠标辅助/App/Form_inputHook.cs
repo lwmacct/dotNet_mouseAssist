@@ -14,7 +14,7 @@ using System.Security.Cryptography.X509Certificates;
 using Lwm.inputAssist;
 using System.Threading;
 using Lwm.Forms;
-using Lwm.Win32API;
+using Lwm.DLL;
 
 
 namespace App {
@@ -605,6 +605,7 @@ namespace App {
 		/// 单元测试
 		/// </summary>
 		private void UnitTest() {
+
 
 
 		}

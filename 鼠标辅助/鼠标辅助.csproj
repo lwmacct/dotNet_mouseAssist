@@ -121,7 +121,7 @@
     <Compile Include="App\Form_Main.Designer.cs">
       <DependentUpon>Form_Main.cs</DependentUpon>
     </Compile>
-    <Compile Include="Lwm\Win32_API\Win32API.cs" />
+    <Compile Include="Lwm\DLL\WinAPI.cs" />
     <Compile Include="Lwm\Wondow\New_Window.cs">
       <SubType>Form</SubType>
     </Compile>

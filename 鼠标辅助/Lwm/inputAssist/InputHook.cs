@@ -13,6 +13,7 @@ namespace Lwm.inputAssist {
 	public class InputHook {
 
 		#region 导入 DLL
+
 		/// <summary>
 		/// 获取窗口标题
 		/// </summary>
@@ -26,6 +27,7 @@ namespace Lwm.inputAssist {
 			StringBuilder lpString,
 			int nMaxCount
 		);
+
 		/// <summary>
 		/// 获取类的名字
 		/// </summary>
@@ -49,12 +51,14 @@ namespace Lwm.inputAssist {
 		public static extern IntPtr WindowFromPoint(
 			Point Point
 		);
+
 		/// <summary>
 		/// 获取前台窗口句柄
 		/// </summary>
 		/// <returns></returns>
 		[DllImport( "user32.dll", CharSet = CharSet.Auto, ExactSpelling = true )]
 		public static extern IntPtr GetForegroundWindow();
+
 		/// <summary>
 		/// 模拟键盘的方法
 		/// </summary>
@@ -65,6 +69,15 @@ namespace Lwm.inputAssist {
 		[DllImport( "user32.dll" )]
 		public static extern void keybd_event(byte bVk, byte bScan, int dwFlags, int dwExtraInfo);
 
+		/// <summary>
+		/// 取得顶级窗口
+		/// </summary>
+		/// https://baike.baidu.com/item/GetAncestor/9391878?fr=aladdin
+		/// <param name="hWnd"></param>
+		/// <param name="gaFlags"></param>
+		/// <returns></returns>
+		[DllImport( "user32.dll", CharSet = CharSet.Auto )]
+		private static extern IntPtr GetAncestor(IntPtr hWnd, int gaFlags);
 		#endregion
 
 		#region 子类
@@ -77,15 +90,32 @@ namespace Lwm.inputAssist {
 			/// 句柄
 			/// </summary>
 			public IntPtr IntPtr;
+
 			/// <summary>
 			/// 标题
 			/// </summary>StringBuilder
 			public StringBuilder title = new StringBuilder( 256 );
+
 			/// <summary>
 			/// 类名
 			/// </summary>
 			public StringBuilder className = new StringBuilder( 256 );
-			public Window_Info() { }
+
+			/// <summary>
+			/// 句柄
+			/// </summary>
+			public IntPtr Root_IntPtr = IntPtr.Zero;
+
+			/// <summary>
+			/// 标题
+			/// </summary>StringBuilder
+			public StringBuilder Root_title = new StringBuilder( 256 );
+
+			/// <summary>
+			/// 类名
+			/// </summary>
+			public StringBuilder Root_className = new StringBuilder( 256 );
+
 			/// <summary>
 			/// 转为字符串
 			/// </summary>
@@ -116,9 +146,15 @@ namespace Lwm.inputAssist {
 		/// </summary>
 		public class Mouse_Window_Info : Window_Info {
 			public Mouse_Window_Info(Point location) {
+
 				IntPtr = WindowFromPoint( location );//得到窗口句柄
 				GetWindowText( IntPtr, title, title.Capacity );//得到窗口的标题
 				GetClassName( IntPtr, className, className.Capacity );//得到窗口的类名
+
+				//取顶级窗口信息
+				Root_IntPtr = GetAncestor( IntPtr, 2 );//得到窗口句柄
+				GetWindowText( Root_IntPtr, Root_title, Root_title.Capacity );//得到窗口的标题
+				GetClassName( Root_IntPtr, Root_className, Root_className.Capacity );//得到窗口的类名
 			}
 
 		}
