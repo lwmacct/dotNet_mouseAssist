@@ -680,7 +680,7 @@ namespace App {
 		/// </summary>
 		/// <param name="txt"></param>
 		private void SetFrom_textBox_windowInfo(string txt) {
-			textBox_mouse_located_window_info.Text = Text;
+			textBox_mouse_located_window_info.Text = txt;
 		}
 
 		/// <summary>

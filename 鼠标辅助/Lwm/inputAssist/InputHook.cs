@@ -124,7 +124,11 @@ namespace Lwm.inputAssist {
 				return new {
 					this.IntPtr,
 					this.title,
-					this.className
+					this.className,
+
+					this.Root_IntPtr,
+					this.Root_title,
+					this.Root_className
 				}.ToString();
 			}
 		}
@@ -156,7 +160,7 @@ namespace Lwm.inputAssist {
 				GetWindowText( Root_IntPtr, Root_title, Root_title.Capacity );//得到窗口的标题
 				GetClassName( Root_IntPtr, Root_className, Root_className.Capacity );//得到窗口的类名
 			}
-			
+
 		}
 		#endregion 子类
 
