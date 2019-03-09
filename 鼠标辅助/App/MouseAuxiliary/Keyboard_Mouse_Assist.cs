@@ -228,7 +228,6 @@ namespace App {
 					course.className = v_ih.window_Info_Mouse.Root_className.ToString();
 					vHe_Lisy = vShm.Get_Key_List( course.titleName, course.className );
 
-					Console.WriteLine(course);
 					for (int i = 0; i < vHe_Lisy.Count; i++) {
 						flpList.Add_Record( vHe_Lisy[i].Key_Text, vHe_Lisy[i].comment );
 					}
@@ -237,6 +236,8 @@ namespace App {
 
 					new_Window.ResumeLayout( false );//布局相关
 					new_Window.PerformLayout();//布局相关
+
+					new_Window.TopMost = true;//窗口在最前
 
 					new_Window.ControlBox = false;//不显示控制按钮
 					new_Window.ShowInTaskbar = false;//不显示在任务栏

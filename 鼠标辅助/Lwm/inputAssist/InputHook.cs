@@ -156,7 +156,7 @@ namespace Lwm.inputAssist {
 				GetWindowText( Root_IntPtr, Root_title, Root_title.Capacity );//得到窗口的标题
 				GetClassName( Root_IntPtr, Root_className, Root_className.Capacity );//得到窗口的类名
 			}
-
+			
 		}
 		#endregion 子类
 

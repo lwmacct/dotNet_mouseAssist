@@ -137,7 +137,6 @@ namespace Lwm.inputAssist {
 						ret = Software_Hotkey_List[i].last;
 						break;
 					}
-
 				}
 				return ret;
 			}
@@ -154,8 +153,9 @@ namespace Lwm.inputAssist {
 				for (var i = 0; i < Software_Hotkey_List.Count; i++) {
 					if (Software_Hotkey_List[i].Perform_Matching( window_titleName, window_className )) {
 						ret = Software_Hotkey_List[i].key_List;
+						break;
 					}
-					break;
+
 				}
 				return ret;
 			}
@@ -385,8 +385,6 @@ namespace Lwm.inputAssist {
 
 					WinApi_w.SwitchToThisWindow( c_course.Handle, true );//设置焦点
 
-					//Console.WriteLine( c_course );
-
 					System.Threading.Thread.Sleep( 10 );
 
 					c_course.Clear_Alt_State();//解除Alt状态
@@ -442,12 +440,13 @@ namespace Lwm.inputAssist {
 		/// </summary>
 		/// <returns></returns>
 		public Boolean Perform_Matching(string window_title, string window_class) {
+
 			Match mat_title = Regex.Match( window_title, setting.title_regexMatch );//标题正则
 			Match mat_class;//类名正则
 			Boolean title_bool = false;//标题是否匹配成功
 			Boolean class_bool = false;//类名是否匹配成功
 			Boolean ret_bool = false;//最终匹配结果
-
+			
 			//匹配标题
 			if (mat_title.Groups.Count >= setting.title_MatchGroup) {
 				if (mat_title.Groups[setting.title_MatchGroup].Value == setting.title_MatchValue) {

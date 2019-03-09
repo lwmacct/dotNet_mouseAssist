@@ -409,7 +409,6 @@ namespace App {
 				//重命名
 				win.textBox_software_name.TextChanged += new EventHandler( TextBox_software_name_TextChanged );
 			}
-
 		}
 
 		/// <summary>
@@ -636,8 +635,6 @@ namespace App {
 					//显示鼠标所在窗口信息(按右侧 Alt 显示)
 					if (key.KeyCode == Keys.RMenu && Sender == InputHook.Action.KeyUp) {
 						SetFrom_textBox_windowInfo( vHks.window_Info_Mouse.ToString() );
-						Console.WriteLine( vHks.window_Info_Foreground.title );
-						Console.WriteLine( vHks.window_Info_Foreground.className );
 					}
 				}
 				var v = new {
@@ -683,8 +680,7 @@ namespace App {
 		/// </summary>
 		/// <param name="txt"></param>
 		private void SetFrom_textBox_windowInfo(string txt) {
-			textBox_mouse_located_window_info.AppendText( txt + Environment.NewLine );
-			textBox_mouse_located_window_info.SelectionStart = textBox_mouse_located_window_info.Text.Length;
+			textBox_mouse_located_window_info.Text = Text;
 		}
 
 		/// <summary>
