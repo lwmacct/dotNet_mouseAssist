@@ -14,6 +14,9 @@ using System.Security.Cryptography.X509Certificates;
 using Lwm.inputAssist;
 using System.Threading;
 using Lwm.Forms;
+using Lwm.Win32API;
+
+
 
 
 namespace App {
@@ -53,7 +56,8 @@ namespace App {
 		/// <summary>
 		/// 组合键,在添加热键到列表的时候用到,在输入热键时,热键会保存到这个变量
 		/// </summary>
-		private List<Keys> hotKey = new List<Keys>();
+		private List<Keys>[] v_hotKey = new List<Keys>[2] { new List<Keys>(), new List<Keys>() };
+
 
 		public Form_inputHook() {
 			InitializeComponent();
@@ -132,8 +136,14 @@ namespace App {
 
 				///设置鼠标辅助键
 				void set_mouseKey() {
-					win.textBox_mouse_last.Text = v_sh_list[index].last.Key_Text;
-					win.textBox_mouse_next.Text = v_sh_list[index].next.Key_Text;
+
+					string[] list = v_sh_list[index].last.Key_Text.Split( new char[] { ',', ' ' } );
+					string[] next = v_sh_list[index].next.Key_Text.Split( new char[] { ',', ' ' } );
+					win.textBox_mouse_last1.Text = list[0];
+					win.textBox_mouse_last2.Text = list.Length == 3 ? list[2] : "";
+
+					win.textBox_mouse_next1.Text = next[0];
+					win.textBox_mouse_next2.Text = next.Length == 3 ? next[2] : "";
 				}
 
 
@@ -163,7 +173,8 @@ namespace App {
 				set_mouseKey();//鼠标辅助键
 				set_hotKey_List();//热键列表
 				win.tabControl_setting.Enabled = true;//解除禁用
-				win.button_add_software.Text = "删除";//重置删除按钮
+				win.button_delete_software.Text = "删除";//重置删除按钮
+
 			}
 
 			/// <summary>
@@ -183,32 +194,38 @@ namespace App {
 			}
 
 			/// <summary>
-			/// 捕获输入的热键
+			/// 捕获输入的热键,热键按  第一次按键 和 第二次按下按键 分配到 win.v_hotKey 变量中
+			/// 并修改编辑框里的内容,编辑框内容被修改了就会自动触发内容被修改事件
+			/// 修改事件里有保存热键的逻辑
 			/// </summary>
 			/// <param name="sender"></param>
 			/// <param name="e"></param>
-			private void TextBox_input_hotKey(object sender, KeyEventArgs e) {
+			private void Capture_Input_HotKey(object sender, KeyEventArgs e) {
 				if (e.KeyCode == Keys.LShiftKey || e.KeyCode == Keys.RShiftKey || e.KeyCode == Keys.ShiftKey) return;
 				if (e.KeyCode == Keys.LControlKey || e.KeyCode == Keys.RControlKey || e.KeyCode == Keys.ControlKey) return;
 				if (e.KeyCode == Keys.LMenu || e.KeyCode == Keys.RMenu || e.KeyCode == Keys.Menu) return;
-				win.hotKey.Clear();
+				TextBox textBox = (TextBox)sender;
+				//检测按键是第一次按下键还是第二次按下键来进行索引分配
+				string _char = textBox.Name.Substring( textBox.Name.Length - 1 );
+				int i = _char == "2" ? 1 : 0;
+				win.v_hotKey[i].Clear();
 				List<string> key = new List<string>();
 				if (e.Control) {
 					key.Add( "Ctrl" );
-					win.hotKey.Add( Keys.LControlKey );
+					win.v_hotKey[i].Add( Keys.LControlKey );
 				}
 				if (e.Shift) {
 					key.Add( "Shift" );
-					win.hotKey.Add( Keys.LShiftKey );
+					win.v_hotKey[i].Add( Keys.LShiftKey );
 				}
 
 				if (e.Alt) {
 					key.Add( "Alt" );
-					win.hotKey.Add( Keys.LMenu );
+					win.v_hotKey[i].Add( Keys.LMenu );
 				}
 				key.Add( e.KeyCode.ToString() );
-				win.hotKey.Add( e.KeyCode );
-				( (TextBox)sender ).Text = string.Join( " + ", key );
+				win.v_hotKey[i].Add( e.KeyCode );
+				textBox.Text = string.Join( "+", key );
 			}
 
 			/// <summary>
@@ -282,9 +299,30 @@ namespace App {
 			/// </summary>
 			/// <param name="sender"></param>
 			/// <param name="e"></param>
-			private void TextBox_mouse_next_TextChanged(object sender, EventArgs e) {
-				Get_Selection_Software().next.HotKey = new List<Keys>( win.hotKey );
-				win.v_kma.vShm.Save_Config();
+			private void TextBox_mouse_next1_TextChanged(object sender, EventArgs e) {
+
+				int index = 0;
+
+				if (win.v_hotKey[index].Count != 0 && ( (TextBox)sender ).Text != "") {
+					Get_Selection_Software().next.HotKey[index] = new List<Keys>( win.v_hotKey[index] );
+					win.v_kma.vShm.Save_Config();
+					win.v_hotKey[index].Clear();
+				}
+			}
+
+			/// <summary>
+			/// 修改鼠标辅助键 Next
+			/// </summary>
+			/// <param name="sender"></param>
+			/// <param name="e"></param>
+			private void TextBox_mouse_next2_TextChanged(object sender, EventArgs e) {
+
+				int index = 1;
+				if (win.v_hotKey[index].Count != 0 && ( (TextBox)sender ).Text != "") {
+					Get_Selection_Software().next.HotKey[index] = new List<Keys>( win.v_hotKey[index] );
+					win.v_kma.vShm.Save_Config();
+					win.v_hotKey[index].Clear();
+				}
 			}
 
 			/// <summary>
@@ -292,9 +330,29 @@ namespace App {
 			/// </summary>
 			/// <param name="sender"></param>
 			/// <param name="e"></param>
-			private void TextBox_mouse_last_TextChanged(object sender, EventArgs e) {
-				Get_Selection_Software().last.HotKey = new List<Keys>( win.hotKey );
-				win.v_kma.vShm.Save_Config();
+			private void TextBox_mouse_last1_TextChanged(object sender, EventArgs e) {
+
+				int index = 0;
+				if (win.v_hotKey[index].Count != 0 && ( (TextBox)sender ).Text != "") {
+					Get_Selection_Software().last.HotKey[index] = new List<Keys>( win.v_hotKey[index] );
+					win.v_kma.vShm.Save_Config();
+					win.v_hotKey[index].Clear();
+				}
+			}
+
+			/// <summary>
+			/// 修改鼠标辅助键 Last
+			/// </summary>
+			/// <param name="sender"></param>
+			/// <param name="e"></param>
+			private void TextBox_mouse_last2_TextChanged(object sender, EventArgs e) {
+
+				int index = 1;
+				if (win.v_hotKey[index].Count != 0 && ( (TextBox)sender ).Text != "") {
+					Get_Selection_Software().last.HotKey[index] = new List<Keys>( win.v_hotKey[index] );
+					win.v_kma.vShm.Save_Config();
+					win.v_hotKey[index].Clear();
+				}
 			}
 
 			/// <summary>
@@ -316,6 +374,7 @@ namespace App {
 				win.comboBox_software_list.SelectedIndex = index;
 				win.v_kma.vShm.Save_Config();//保存配置
 			}
+
 			/// <summary>
 			/// 构造函数
 			/// </summary>
@@ -325,7 +384,8 @@ namespace App {
 
 				//软件下拉列表被选中时
 				win.comboBox_software_list.SelectionChangeCommitted += new EventHandler( ComboBox_software_list_SelectionChangeCommitted );
-				win.textBox_input_hotKey.KeyUp += new KeyEventHandler( TextBox_input_hotKey );
+				win.textBox_input_hotKey1.KeyUp += new KeyEventHandler( Capture_Input_HotKey );
+				win.textBox_input_hotKey2.KeyUp += new KeyEventHandler( Capture_Input_HotKey );
 				//点击删除项的时候
 				win.v_lmh.contextMenuStrip.Items[0].Click += new EventHandler( Click_Delete_HotKey_item );
 				//修改标题匹配规则
@@ -337,10 +397,17 @@ namespace App {
 				win.textBox_class_regular_valve.TextChanged += new EventHandler( TextBox_class_regular_valve_TextChanged );
 				win.numericUpDown_class_group.ValueChanged += new EventHandler( NumericUpDown_class_group_ValueChanged );
 				//鼠标辅助键
-				win.textBox_mouse_last.KeyUp += new KeyEventHandler( TextBox_input_hotKey );
-				win.textBox_mouse_next.KeyUp += new KeyEventHandler( TextBox_input_hotKey );
-				win.textBox_mouse_last.TextChanged += new EventHandler( TextBox_mouse_last_TextChanged );
-				win.textBox_mouse_next.TextChanged += new EventHandler( TextBox_mouse_next_TextChanged );
+				win.textBox_mouse_last1.KeyUp += new KeyEventHandler( Capture_Input_HotKey );
+				win.textBox_mouse_last2.KeyUp += new KeyEventHandler( Capture_Input_HotKey );
+				win.textBox_mouse_last1.TextChanged += new EventHandler( TextBox_mouse_last1_TextChanged );
+				win.textBox_mouse_last2.TextChanged += new EventHandler( TextBox_mouse_last2_TextChanged );
+
+				//鼠标辅助键
+				win.textBox_mouse_next1.KeyUp += new KeyEventHandler( Capture_Input_HotKey );
+				win.textBox_mouse_next2.KeyUp += new KeyEventHandler( Capture_Input_HotKey );
+				win.textBox_mouse_next1.TextChanged += new EventHandler( TextBox_mouse_next1_TextChanged );
+				win.textBox_mouse_next2.TextChanged += new EventHandler( TextBox_mouse_next2_TextChanged );
+
 				//重命名
 				win.textBox_software_name.TextChanged += new EventHandler( TextBox_software_name_TextChanged );
 			}
@@ -380,12 +447,18 @@ namespace App {
 			/// <summary>
 			/// 添加热键项
 			/// </summary>
-			public void Add_hotKey_item(List<Keys> hotKey, string comment) {
+			public void Add_hotKey_item() {
+
+				string comment = win.textBox_hotKey_comment.Text;
 				int index = win.comboBox_software_list.SelectedIndex;
 				Software_Hotkey v_sh = win.v_kma.vShm.Software_Hotkey_List[index];
 				Software_Hotkey.HotKey_Execute v_shhe = new Software_Hotkey.HotKey_Execute();
 				v_shhe.comment = comment;
-				v_shhe.HotKey = new List<Keys>( hotKey );//克隆
+
+				for (var i = 0; i < v_shhe.HotKey.Length; i++) {
+					v_shhe.HotKey[i] = new List<Keys>( win.v_hotKey[i] );
+				}
+
 				v_sh.key_List.Add( v_shhe );
 				//假装触发一次事件,让列表刷新
 				win.v_ce.ComboBox_software_list_SelectionChangeCommitted( win.comboBox_software_list, EventArgs.Empty );
@@ -415,6 +488,30 @@ namespace App {
 						break;
 				}
 			}
+
+			/// <summary>
+			/// 清除
+			/// </summary>
+			/// <param name="target"></param>
+			public void Clear_hotKey(string target) {
+				switch (target) {
+					case "last":
+						win.textBox_mouse_last1.Text = "";
+						win.textBox_mouse_last2.Text = "";
+						Get_Selection_Software().last.ClearKey();
+						break;
+					case "next":
+						win.textBox_mouse_next1.Text = "";
+						win.textBox_mouse_next2.Text = "";
+						Get_Selection_Software().next.ClearKey();
+						break;
+					default:
+						Console.WriteLine( "参数有误 方法 Clear_hotKey" );
+						break;
+				}
+				win.v_kma.vShm.Save_Config();
+			}
+
 			public Button_Function(Form_inputHook _this) {
 				this.win = _this;
 			}
@@ -460,7 +557,7 @@ namespace App {
 
 					break;
 				case "button_addToList"://添加到列表
-					v_bf.Add_hotKey_item( hotKey, textBox_hotKey_comment.Text );
+					v_bf.Add_hotKey_item();
 					break;
 				case "button_shield_keyboard"://屏蔽键盘
 					vHks.Shield_keyboard();
@@ -491,19 +588,29 @@ namespace App {
 				case "button_delete_software"://删除软件
 					v_bf.Software_rename();
 					break;
+				case "button_clear_next":
+					v_bf.Clear_hotKey( "next" );
+					break;
+				case "button_clear_last":
+					v_bf.Clear_hotKey( "last" );
+					break;
 				default:
 					Console.WriteLine( "按钮方法未定义" );
 					break;
 			}
 		}
-
-
+		private int MAKELONG(int int1, int int2) {
+			Int32 inta = ( int1 << 16 ) | int2;
+			return inta;
+		}
 		/// <summary>
 		/// 单元测试
 		/// </summary>
 		private void UnitTest() {
 
+
 		}
+
 
 		/// <summary>
 		/// 键盘事件处理
@@ -589,7 +696,6 @@ namespace App {
 			lable_state_Ctrl.Text = "Ctrl 键状态 " + vHks.keyStateAll[Keys.LControlKey];
 			lable_state_Shift.Text = "Shift 键状态 " + vHks.keyStateAll[Keys.LShiftKey];
 		}
-
 
 	}
 }

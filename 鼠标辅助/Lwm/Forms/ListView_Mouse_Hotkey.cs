@@ -135,7 +135,7 @@ namespace Lwm.Forms {
 				"组合键",
 				"注 释"
 			};
-			int[] width = new[] { 200, 256 };
+			int[] width = new[] { 280, 280 };
 
 			columnHeader = new ColumnHeader[columnName.Length];
 			for (var i = 0; i < columnHeader.Length; i++) {

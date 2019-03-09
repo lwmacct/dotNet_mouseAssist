@@ -62,21 +62,15 @@ namespace App {
 		private List<Software_Hotkey.HotKey_Execute> vHe_Lisy = null;
 
 		/// <summary>
-		/// 是否正在处理鼠标辅助键,用于去除重复
+		/// 模拟过程对象
 		/// </summary>
-		private Boolean be_dispose_mouse = false;
-
-		/// <summary>
-		/// 用于标记是否正在模拟正在模拟组合键,这里必须是引用类型,所以用数组
-		/// [0] 是否正在模拟组合键
-		/// [1] true = 鼠标辅助键触发,false = 快捷键列表触发
-		/// </summary>
-		private Boolean[] is_simulated = new[] { false, false };
+		private Software_Hotkey.HotKey_Execute.Course course = new Software_Hotkey.HotKey_Execute.Course();
 
 		/// <summary>
 		/// 热键管理对象
 		/// </summary>
 		public Software_Hotkey.Manage vShm = new Software_Hotkey.Manage();
+
 
 
 		/// <summary>
@@ -105,20 +99,22 @@ namespace App {
 			};
 			Software_Hotkey vSh = new Software_Hotkey( setting );
 
+			vSh.next.HotKey[0].Add( Keys.LShiftKey );
+			vSh.next.HotKey[0].Add( Keys.F5 );
 
-			vSh.next.Add_Key( Keys.LShiftKey ).Add_Key( Keys.F5 );
-			vSh.last.Add_Key( Keys.F5 );
+			vSh.last.HotKey[0].Add( Keys.F5 );
 
 			Software_Hotkey.HotKey_Execute vHe1 = new Software_Hotkey.HotKey_Execute();
 			Software_Hotkey.HotKey_Execute vHe2 = new Software_Hotkey.HotKey_Execute();
-			vHe1.Add_Key( Keys.F5 );
+			vHe1.HotKey[0].Add( Keys.F5 );
 			vHe1.comment = "开始";
 
-			vHe2.Add_Key( Keys.LShiftKey ).Add_Key( Keys.F5 );
+			vHe2.HotKey[0].Add( Keys.LShiftKey );
+			vHe2.HotKey[0].Add( Keys.F5 );
 			vHe2.comment = "停止";
 
-			vSh.Add_Key_List( vHe1 );
-			vSh.Add_Key_List( vHe2 );
+			vSh.key_List.Add( vHe1 );
+			vSh.key_List.Add( vHe2 );
 			//JSON.stringify()
 
 			vShm.Software_Hotkey_List.Add( vSh );
@@ -128,40 +124,39 @@ namespace App {
 		/// <summary>
 		/// 鼠标辅助按键处理
 		/// </summary>
-		/// <param name="vIH"></param>
+		/// <param name="v_ih"></param>
 		/// <param name="action"></param>
-		private void Mouse_Auxiliary_button(InputHook vIH, InputHook.Action action) {
+		private void Mouse_Auxiliary_button(InputHook v_ih, InputHook.Action action) {
 
-			if (vIH.keyStateAll[Keys.LControlKey] == true &&
-				vIH.keyStateAll[Keys.LShiftKey] == true &&
-				vIH.keyStateAll[Keys.LMenu] == true &&
-				be_dispose_mouse == false) {
+			if (v_ih.keyStateAll[Keys.LControlKey] == true &&
+				v_ih.keyStateAll[Keys.LShiftKey] == true &&
+				v_ih.keyStateAll[Keys.LMenu] == true &&
+				course.be_execute == false) {
 
-				string titleName = vIH.window_Info_Foreground.title.ToString();
-				string className = vIH.window_Info_Foreground.className.ToString();
+				course.handle = v_ih.window_Info_Mouse.IntPtr;//设置鼠标所在窗口句柄
+				course.titleName = v_ih.window_Info_Foreground.title.ToString();
+				course.className = v_ih.window_Info_Foreground.className.ToString();
 
 				//减号
-				if (vIH.keyStateAll[Keys.Subtract]) {
-					be_dispose_mouse = true;//标记为正在处理
+				if (v_ih.keyStateAll[Keys.Subtract]) {
+					course.be_execute = true;//标记为正在处理
 					set_be_dispose_mouse();//500毫秒后设置 be_dispose_mouse 为false
 
-					is_simulated[1] = true;//设置为鼠标辅助键触发
-					up_Alt_Execute_HotKey = vShm.Get_Last( titleName, className );
+					up_Alt_Execute_HotKey = vShm.Get_Last( course.titleName, course.className );
 				}
 
 				//加号
-				if (vIH.keyStateAll[Keys.Add]) {
-					be_dispose_mouse = true;//标记为正在处理
+				if (v_ih.keyStateAll[Keys.Add]) {
+					course.be_execute = true;//标记为正在处理
 					set_be_dispose_mouse();//500毫秒后设置 be_dispose_mouse 为false
 
-					is_simulated[1] = true;//设置为鼠标辅助键触发
-					up_Alt_Execute_HotKey = vShm.Get_Next( titleName, className );
+					up_Alt_Execute_HotKey = vShm.Get_Next( course.titleName, course.className );
 				}
-				////开启一个线程,500毫秒后设置为false
+				////开启一个线程,512毫秒后设置为false
 				void set_be_dispose_mouse() {
 					new Thread( new ThreadStart( () => {
-						System.Threading.Thread.Sleep( 500 );
-						be_dispose_mouse = false;
+						System.Threading.Thread.Sleep( 512 );
+						course.be_execute = false;//标记为正在处理
 					} ) ).Start();
 				}
 			}
@@ -174,11 +169,11 @@ namespace App {
 		/// <summary>
 		/// 键盘信息处理
 		/// </summary>
-		public void Keyboard_Handler(InputHook vIH, InputHook.Action action) {
-			Mouse_Auxiliary_button( vIH, action );//检测是否按下鼠标辅助键
+		public void Keyboard_Handler(InputHook v_ih, InputHook.Action action) {
+			Mouse_Auxiliary_button( v_ih, action );//检测是否按下鼠标辅助键
 
 			//如果按键是弹起操作,并且弹起的是 左 Alt 键, 并且不是正在模拟的状态,就模拟热键 (如果有需要模拟的热键)
-			if (action == InputHook.Action.KeyUp && vIH.keyboard_Input_Record[0].KeyCode == Keys.LMenu && is_simulated[0] == false) {
+			if (action == InputHook.Action.KeyUp && v_ih.keyboard_Input_Record[0].KeyCode == Keys.LMenu && course.be_simulate == false) {
 				//如果有快捷键列表窗口弹出,就取选中项为放在Alt要执行的热键
 				if (new_Window != null) {
 					new_Window.Dispose(); //释放资源 
@@ -189,7 +184,6 @@ namespace App {
 					if (vHe_Lisy != null) {
 						if (vHe_Lisy.Count != 0) { //如果窗口不是空的
 							up_Alt_Execute_HotKey = vHe_Lisy[flpList.Selected_Index];
-							is_simulated[1] = false;//设置为菜单列表触发
 						}
 
 						vHe_Lisy = null;
@@ -201,9 +195,9 @@ namespace App {
 				//如果有需要执行的组合键
 				if (up_Alt_Execute_HotKey != null) {
 
-					is_simulated[0] = true;//标记为正在模拟
-										   //开始模拟,模拟过程是新线程,把 is_simulated 传过去是方便在新线程中取消正在模拟状态
-					up_Alt_Execute_HotKey.Execute( is_simulated );
+					course.be_simulate = true;//标记为正在模拟
+											  //开始模拟,模拟过程是新线程,把 is_simulated 传过去是方便在新线程中取消正在模拟状态
+					up_Alt_Execute_HotKey.Execute( course );
 					up_Alt_Execute_HotKey = null;
 				}
 			}
@@ -212,11 +206,12 @@ namespace App {
 		/// <summary>
 		/// 鼠标信息处理
 		/// </summary>
-		public void Mouse_Handler(InputHook vIH, MouseEventArgs mea) {
+		public void Mouse_Handler(InputHook v_ih, MouseEventArgs mea) {
 
+			//如果鼠标左键等于按下状态并且鼠标滚轮有滚动,并且不再模拟状态
+			if (v_ih.keyStateAll[Keys.LMenu] == true && mea.Delta != 0 && course.be_simulate == false) {
 
-			//如果鼠标左键等于按下状态并且鼠标滚轮有滚动
-			if (vIH.keyStateAll[Keys.LMenu] == true && mea.Delta != 0) {
+				course.handle = v_ih.window_Info_Mouse.IntPtr;//设置鼠标所在窗口句柄
 
 				//如果窗口已被销毁
 				if (new_Window == null) {
@@ -226,8 +221,8 @@ namespace App {
 					new_Window.Opacity = 0.65;
 					flpList = new Controls_FlpList( new Controls_FlpList.Attr_C() { width = new_window_width } );
 
-					string titleName = vIH.window_Info_Foreground.title.ToString();
-					string className = vIH.window_Info_Foreground.className.ToString();
+					string titleName = v_ih.window_Info_Foreground.title.ToString();
+					string className = v_ih.window_Info_Foreground.className.ToString();
 					vHe_Lisy = vShm.Get_Key_List( titleName, className );
 
 					for (int i = 0; i < vHe_Lisy.Count; i++) {
@@ -249,7 +244,7 @@ namespace App {
 						mea.Location.Y - 10
 					);
 
-					new_Window.Text = vIH.window_Info_Foreground.title.ToString();//设置窗口标题
+					new_Window.Text = v_ih.window_Info_Foreground.title.ToString();//设置窗口标题
 					new_Window.Show();//显示窗口
 					SwitchToThisWindow( new_Window.Handle, true );//窗口置顶
 				}

@@ -3,11 +3,15 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
+using Lwm.ScreenShot;
+using Lwm.Win32API;
+using System.Drawing;
 
 namespace Lwm.inputAssist {
 	/// <summary>
@@ -27,43 +31,43 @@ namespace Lwm.inputAssist {
 			/// 软件名称
 			/// </summary>
 			[DataMember( IsRequired = true )]
-			public string softwareName="";
+			public string softwareName = "";
 
 			/// <summary>
 			/// 窗口标题 正则表达式
 			/// </summary>
 			[DataMember( IsRequired = true )]
-			public string title_regexMatch="";
+			public string title_regexMatch = "";
 
 			/// <summary>
 			/// 匹配到的分组
 			/// </summary>
 			[DataMember( IsRequired = true )]
-			public int title_MatchGroup=0;
+			public int title_MatchGroup = 0;
 
 			/// <summary>
 			/// 匹配到的值
 			/// </summary>
 			[DataMember( IsRequired = true )]
-			public string title_MatchValue="";
+			public string title_MatchValue = "";
 
 			/// <summary>
 			/// 窗口类名 正则表达式,不需要验证类名无需填写
 			/// </summary>
 			[DataMember( IsRequired = true )]
-			public string class_regexMatch="";
+			public string class_regexMatch = "";
 
 			/// <summary>
 			/// 窗口类名 匹配到的分组
 			/// </summary>
 			[DataMember( IsRequired = true )]
-			public int class_MatchGroup=0;
+			public int class_MatchGroup = 0;
 
 			/// <summary>
 			/// 窗口类名 匹配到的值
 			/// </summary>
 			[DataMember( IsRequired = true )]
-			public string class_MatchValue="";
+			public string class_MatchValue = "";
 
 		}
 
@@ -77,23 +81,31 @@ namespace Lwm.inputAssist {
 			/// </summary>
 			public List<Software_Hotkey> Software_Hotkey_List = new List<Software_Hotkey>();
 
-			
 			/// <summary>
 			/// 加载配置
 			/// </summary>
 			/// <param name="filePath"></param>
-			public void Load_Config(string filePath = @"Config\Software_Config_List.json") {
-				String content = File.ReadAllText( filePath );
-				Software_Hotkey_List = JSON.parse<List<Software_Hotkey>>( content );
+			public void Load_Config(string filePath = @"Config\Software_List.json") {
+
+				//如果文件存在的话
+				if (File.Exists( filePath )) {
+					String content = File.ReadAllText( filePath );
+					Software_Hotkey_List = JSON.parse<List<Software_Hotkey>>( content );
+				}
+
 			}
 
 			/// <summary>
 			/// 保存配置
 			/// </summary>
 			/// <param name="filePath"></param>
-			public void Save_Config(string filePath = @"Config\Software_Config_List.json") {
+			public void Save_Config(string filePath = @"Config\Software_List.json") {
+				//如果目录不存在就创建目录
+				if (!Directory.Exists( "Config" )) {
+					Directory.CreateDirectory( "Config" );
+				}
 				String content = JSON.stringify( Software_Hotkey_List );
-				File.WriteAllText( @"Config\Software_Config_List.json", content );
+				File.WriteAllText( filePath, content );
 			}
 
 			/// <summary>
@@ -107,7 +119,7 @@ namespace Lwm.inputAssist {
 				for (var i = 0; i < Software_Hotkey_List.Count; i++) {
 					if (Software_Hotkey_List[i].Perform_Matching( window_titleName, window_className )) {
 						ret = Software_Hotkey_List[i].next;
-
+						break;
 					}
 				}
 				return ret;
@@ -124,12 +136,12 @@ namespace Lwm.inputAssist {
 				for (var i = 0; i < Software_Hotkey_List.Count; i++) {
 					if (Software_Hotkey_List[i].Perform_Matching( window_titleName, window_className )) {
 						ret = Software_Hotkey_List[i].last;
+						break;
 					}
 
 				}
 				return ret;
 			}
-
 
 			/// <summary>
 			/// 取得软件 快捷键列表 key_List(相当于右键菜单列表)
@@ -144,6 +156,7 @@ namespace Lwm.inputAssist {
 					if (Software_Hotkey_List[i].Perform_Matching( window_titleName, window_className )) {
 						ret = Software_Hotkey_List[i].key_List;
 					}
+					break;
 				}
 				return ret;
 			}
@@ -154,6 +167,10 @@ namespace Lwm.inputAssist {
 		/// </summary>
 		[DataContract]
 		public class HotKey_Execute {
+
+			#region 导入Dll
+
+
 			/// <summary>
 			/// 模拟键盘的方法
 			/// </summary>
@@ -161,14 +178,224 @@ namespace Lwm.inputAssist {
 			/// <param name= "bScan" >扫描码，一般不用设置，用0代替就行</param>
 			/// <param name= "dwFlags" >选项标志：0：表示按下，2：表示松开</param>
 			/// <param name= "dwExtraInfo">一般设置为0</param>
-			[System.Runtime.InteropServices.DllImport( "user32.dll" )]
-			public static extern void keybd_event(byte bVk, byte bScan, int dwFlags, int dwExtraInfo);
+			[DllImport( "user32.dll" )]
+			private static extern void keybd_event(byte bVk, byte bScan, int dwFlags, int dwExtraInfo);
 
 			/// <summary>
-			///组合键数据
+			/// 对指定的窗口设置键盘焦点。该窗口必须与调用线程的消息队列相关
+			/// </summary>
+			/// https://baike.baidu.com/item/SetFocus
+			/// <param name="hWnd">接收键盘输入的窗口指针</param>
+			/// <returns>一个布尔值；如果获得焦点成功，则为 true；如果失败，则为 false。</returns>
+			[DllImport( "user32.dll" )]
+			private static extern Boolean SetFocus(IntPtr hWnd);//设定焦点
+
+			/// <summary>
+			/// 激活指定窗口(无论是否最小化) 
+			/// 想要将最小化的窗口还原并使其在屏幕最前，只要向fAltTab参数传入TRUE就可以了。
+			/// </summary>
+			/// <param name="hWnd">要激活的窗口句柄</param>
+			/// <param name="fAltTab">是否使最小化的窗口还原</param>
+			/// <returns></returns>
+			[DllImport( "user32.dll" )]
+			private static extern void SwitchToThisWindow(IntPtr hWnd, Boolean fAltTab);//设定焦点
+
+			/// <summary>
+			/// 该函数获取窗口客户区的大小(桌面大小)
+			/// 需要关键字 out
+			/// </summary>
+			/// https://baike.baidu.com/item/GetWindowRect/6376447?fr=aladdin
+			/// 使用示例 GetClientRect( (IntPtr)66778, out ipRect )
+			/// <param name="hWnd">窗口句柄</param>
+			/// <param name="lpRect">是一个指针，指向一个RECT类型的rectangle结构。该结构有四个LONG字段,分别为left、top、right和bottom。GetClientRect将这四个字段设定为窗口显示区域的尺寸。left和top字段通常设定为0。right和bottom字段设定为显示区域的宽度和高度（像素点数）。 也可以是一个CRect对象指针。CRect对象有多个参数，与RECT用法相同</param>
+			/// <returns>如果函数成功，返回一个非零值。</returns>
+			[DllImport( "user32.dll" )]
+			private static extern int GetClientRect(IntPtr hWnd, out RECT lpRect);
+
+			/// <summary>
+			/// 该函数返回指定窗口的边框矩形的尺寸。该尺寸以相对于屏幕坐标左上角的屏幕坐标给出。
+			/// 需要关键字 out
+			/// </summary>
+			/// 使用示例 GetWindowRect ( (IntPtr)66778, out ipRect )
+			/// <param name="hWnd">窗口句柄</param>
+			/// <param name="lpRect">是一个指针，指向一个RECT类型的rectangle结构。该结构有四个LONG字段,分别为left、top、right和bottom。GetClientRect将这四个字段设定为窗口显示区域的尺寸。left和top字段通常设定为0。right和bottom字段设定为显示区域的宽度和高度（像素点数）。 也可以是一个CRect对象指针。CRect对象有多个参数，与RECT用法相同</param>
+			/// <returns>如果函数成功，返回一个非零值。</returns>
+			[DllImport( "user32.dll" )]
+			private static extern int GetWindowRect(IntPtr hWnd, out RECT lpRect);
+
+			/// <summary>
+			/// 鼠标模拟
+			/// </summary>
+			/// https://baike.baidu.com/item/mouse_event
+			/// <param name="dwFlags">标志位集，指定点击按钮和鼠标动作的多种情况。此参数可以是下列值的某种组合：</param>>
+			/// <param name="dx">指定鼠标沿x轴的绝对位置或者从上次鼠标事件产生以来移动的数量，依赖于MOUSEEVENTF_ABSOLUTE的设置。给出的绝对数据作为鼠标的实际X坐标；给出的相对数据作为移动的mickeys数。一个mickey表示鼠标移动的数量，表明鼠标已经移动。</param>
+			/// <param name="dy">指定鼠标沿y轴的绝对位置或者从上次鼠标事件产生以来移动的数量，依赖于MOUSEEVENTF_ABSOLUTE的设置。给出的绝对数据作为鼠标的实际y坐标，给出的相对数据作为移动的mickeys数。</param>
+			/// <param name="dwData">如果dwFlags为MOUSEEVENTF_WHEEL，则dwData指定鼠标轮移动的数量。正值表明鼠标轮向前转动，即远离用户的方向；负值表明鼠标轮向后转动，即朝向用户。一个轮击定义为WHEEL_DELTA，即120。如果dwFlagsS不是MOUSEEVENTF_WHEEL，则dWData应为零。</param>
+			/// <param name="dwExtralnfo">指定与鼠标事件相关的附加32位值。应用程序调用函数GetMessageExtraInfo来获得此附加信息。</param>
+			/// <returns></returns>
+			[DllImport( "user32.dll" )]
+			private static extern int mouse_event(byte dwFlags, int dx, int dy, byte dwData, byte dwExtralnfo);
+
+			[DllImport( "user32.dll" )]
+			private static extern uint GetWindowThreadProcessId(IntPtr hWnd, ref uint processId);
+
+			//[DllImport( "user32.dll" )]
+			//private static extern int GetGUIThreadInfo(IntPtr hWnd, ref GUITHREADINFO lpgui);
+
+			[DllImport( "user32.dll", SetLastError = true )]
+			private static extern bool GetGUIThreadInfo(uint idThread, ref GuiThreadInfo lpgui);
+
+			[DllImport( "user32.dll", SetLastError = true )]
+			private static extern int GetCaretPos(ref Point pt);
+
+			//消息发送API
+			[DllImport( "User32.dll", EntryPoint = "PostMessage" )]
+			public static extern int PostMessage(
+				IntPtr hWnd,        // 信息发往的窗口的句柄
+				int Msg,            // 消息ID
+				long wParam,         // 参数1
+				long lParam            // 参数2
+			);
+
+
+			[StructLayout( LayoutKind.Sequential )]
+			private struct GuiThreadInfo {
+				public int cbSize;
+				public int flags;
+
+				/// <summary>
+				/// 个人理解为顶级窗口
+				/// </summary>
+				public IntPtr hwndActive;
+
+				/// <summary>
+				/// 获得焦点的窗口句柄
+				/// </summary>
+				public IntPtr hwndFocus;
+				public IntPtr hwndCapture;
+				public IntPtr hwndMenuOwner;
+				public IntPtr hwndMoveSize;
+
+				/// <summary>
+				/// 插入符所在句柄
+				/// </summary>
+				public IntPtr hwndCaret;
+				public RECT rectCaret;
+			}
+
+			#endregion 导入Dll
+
+			/// <summary>
+			///组合键数据,数组类型,分别储存第一次按下按键和第二次按下键
 			/// </summary>
 			[DataMember( IsRequired = true )]
-			public List<Keys> HotKey = new List<Keys>();
+			public List<Keys>[] HotKey = new List<Keys>[]{
+				new List<Keys>(), new List<Keys>(),
+			};
+
+			/// <summary>
+			/// 过程类
+			/// </summary>
+			public class Course {
+				#region 导入DLL
+
+				[DllImport( "User32.dll" )]
+				public extern static void SetCursorPos(int x, int y);
+
+				[DllImport( "user32.dll", CharSet = CharSet.Auto )]
+				public static extern bool GetCursorPos(out Point pt);
+
+				/// <summary>
+				/// 鼠标模拟
+				/// </summary>
+				/// https://baike.baidu.com/item/mouse_event
+				/// <param name="dwFlags">标志位集，指定点击按钮和鼠标动作的多种情况。此参数可以是下列值的某种组合：</param>>
+				/// <param name="dx">指定鼠标沿x轴的绝对位置或者从上次鼠标事件产生以来移动的数量，依赖于MOUSEEVENTF_ABSOLUTE的设置。给出的绝对数据作为鼠标的实际X坐标；给出的相对数据作为移动的mickeys数。一个mickey表示鼠标移动的数量，表明鼠标已经移动。</param>
+				/// <param name="dy">指定鼠标沿y轴的绝对位置或者从上次鼠标事件产生以来移动的数量，依赖于MOUSEEVENTF_ABSOLUTE的设置。给出的绝对数据作为鼠标的实际y坐标，给出的相对数据作为移动的mickeys数。</param>
+				/// <param name="dwData">如果dwFlags为MOUSEEVENTF_WHEEL，则dwData指定鼠标轮移动的数量。正值表明鼠标轮向前转动，即远离用户的方向；负值表明鼠标轮向后转动，即朝向用户。一个轮击定义为WHEEL_DELTA，即120。如果dwFlagsS不是MOUSEEVENTF_WHEEL，则dWData应为零。</param>
+				/// <param name="dwExtralnfo">指定与鼠标事件相关的附加32位值。应用程序调用函数GetMessageExtraInfo来获得此附加信息。</param>
+				/// <returns></returns>
+				[DllImport( "user32.dll" )]
+				private static extern int mouse_event(int dwFlags, int dx, int dy, int dwData, int dwExtralnfo);
+
+				#endregion
+				/// <summary>
+				/// 是否已经正在执行,用于鼠标辅助键触发去除重复
+				/// </summary>
+				public Boolean be_execute = false;
+
+				/// <summary>
+				/// 是否正在模拟
+				/// </summary>
+				public Boolean be_simulate = false;
+
+				/// <summary>
+				/// 要执行热键的窗口句柄
+				/// </summary>
+				public IntPtr handle = IntPtr.Zero;
+
+				/// <summary>
+				/// 窗口标题
+				/// </summary>
+				public string titleName = "";
+
+				/// <summary>
+				/// 窗口类名
+				/// </summary>
+				public string className = "";
+
+				public override string ToString() {
+					return new {
+						this.be_execute,
+						this.be_simulate,
+						this.handle,
+						this.titleName,
+						this.className
+					}.ToString();
+				}
+
+				/// <summary>
+				/// 重新初始化
+				/// </summary>
+				public void Reinit() {
+					this.be_execute = false;
+					this.be_simulate = false;
+					this.className = "";
+					this.titleName = "";
+					this.handle = IntPtr.Zero;
+				}
+
+				/// <summary>
+				/// 清除alt状态
+				/// </summary>
+				public void Clear_Alt_State() {
+					//使用模拟点击窗口来达到效果
+					//	uint threadid = GetWindowThreadProcessId( (IntPtr)3999924, ref processId );
+					GuiThreadInfo lpgui = new GuiThreadInfo();
+					lpgui.cbSize = Marshal.SizeOf( lpgui );
+					GetGUIThreadInfo( 0, ref lpgui );
+
+					//GetWindowRect( this.handle, out ipRect );
+					//SwitchToThisWindow( (IntPtr)394880, false );//激活窗口
+
+					//模拟点击
+					PostMessage( lpgui.hwndActive, 513, 1, MAKELONG( 50, 5 ) );
+					PostMessage( lpgui.hwndActive, 512, 1, MAKELONG( 50, 5 ) );
+					System.Threading.Thread.Sleep( 10 );
+				}
+
+				private long MAKELONG(short x, short y) {
+					short[] to = new[] { y, x };
+					//Array.Sort( to );
+					//Array.Reverse( to );
+					//short a = 50;
+					//short b = 30;
+					long c = to[0] * 65536 + (ushort)to[1];
+					//int c = a * 65536 + (ushort)b;
+					return c;
+				}
+			}
+
 
 			/// <summary>
 			/// 注释
@@ -184,67 +411,30 @@ namespace Lwm.inputAssist {
 			}
 
 			/// <summary>
-			/// 开始执行热键
-			/// </summary>
-			/// <param name="is_simulated">用于标记为已模拟完成</param>
-			public void Execute(Boolean[] is_simulated) {
-
-				//我们需要开一个新线程来执行,避免执行下面这句的时候 Alt 按键还是按着的
-				new Thread( new ThreadStart( () => {
-					//System.Threading.Thread.Sleep( 0 );
-
-					//如果是右键菜单触发就需要先取出 软件 Alt 状态
-					if (is_simulated[1] == false) {
-						//解除应用的 Alt 按下状态
-						keybd_event( (byte)Keys.LMenu, 0, 0, 0 );
-						keybd_event( (byte)Keys.LMenu, 0, 2, 0 );
-					}
-
-					Execute_Dowm();//按下
-					Execute_Up();//弹起
-
-					is_simulated[0] = false;//设置为未在模拟状态
-
-				} ) ).Start();
-
-			}
-
-			/// <summary>
 			/// 执行按下 按顺序按下
 			/// </summary>
-			public void Execute_Dowm() {
-				for (var i = 0; i < this.HotKey.Count; i++) {
-					keybd_event( (byte)HotKey[i], 0, 0, 0 );
+			private void Execute_Dowm(int index) {
+				for (var i = 0; i < this.HotKey[index].Count; i++) {
+					keybd_event( (byte)HotKey[index][i], 0, 0, 0 );
 				}
 			}
 
 			/// <summary>
 			/// 执行弹起 弹起的时候返过来弹起
 			/// </summary>
-			public void Execute_Up() {
-				for (var i = this.HotKey.Count - 1; i >= 0; i--) {
-					keybd_event( (byte)HotKey[i], 0, 2, 0 );
+			private void Execute_Up(int index) {
+				for (var i = 0; i < this.HotKey[index].Count; i++) {
+					keybd_event( (byte)HotKey[index][i], 0, 2, 0 );
 				}
-			}
-
-			/// <summary>
-			/// 设置快捷键按键(keys)
-			///	例如 Ctrl + Alt + A 就要添加三次
-			///
-			/// 按添加顺序执行热键  在这里可以体验一把链式调用
-			/// </summary>
-			/// <param name="key">按键 keys </param>
-			/// <returns></returns>
-			public HotKey_Execute Add_Key(Keys key) {
-				this.HotKey.Add( key );
-				return this;
 			}
 
 			/// <summary>
 			/// 清除热键
 			/// </summary>
 			public void ClearKey() {
-				HotKey.Clear();
+				for (var i = 0; i < HotKey.Length; i++) {
+					HotKey[i] = new List<Keys>();
+				}
 			}
 
 			/// <summary>
@@ -252,13 +442,22 @@ namespace Lwm.inputAssist {
 			/// </summary>
 			/// <returns></returns>
 			private string Create_Key_Text() {
-				List<string> str = new List<string>();
-				for (var i = 0; i < HotKey.Count; i++) {
-					str.Add( To_Normal_key( HotKey[i] ) );
+				//这算法,我看着都懵
+				List<string> ret = new List<string>();
+				List<string>[] str = new List<string>[HotKey.Length];
+				for (var i = 0; i < HotKey.Length; i++) {
+
+					str[i] = new List<string>();
+					for (var i1 = 0; i1 < HotKey[i].Count; i1++) {
+
+						str[i].Add( To_Normal_key( HotKey[i][i1] ) );
+					}
+					ret.Add( string.Join( "+", str[i].ToArray() ) );
 				}
 
-				return string.Join( " + ", str.ToArray() );
+				return string.Join( ", ", ret.ToArray() ).Trim( new char[] { ',', ' ' } );
 			}
+
 			/// <summary>
 			/// 将 LshiftKey 之类的文本转为 Shift
 			/// </summary>
@@ -283,7 +482,29 @@ namespace Lwm.inputAssist {
 				return str;
 			}
 
+			/// <summary>
+			/// 开始执行热键
+			/// </summary>
+			/// <param name="is_simulated">用于标记为已模拟完成</param>
+			public void Execute(Course c_course) {
 
+				//我们需要开一个新线程来执行,避免执行下面这句的时候 Alt 按键还是按着的
+				new Thread( new ThreadStart( () => {
+
+					System.Threading.Thread.Sleep( 10 );
+					c_course.Clear_Alt_State();
+					Execute_Dowm( 0 );//按下
+					Execute_Up( 0 );//弹起
+					System.Threading.Thread.Sleep( 10 );
+					Execute_Dowm( 1 );//按下第二按键
+					Execute_Up( 1 );//弹起第二按键
+
+					c_course.Reinit();//重新初始化
+					SwitchToThisWindow( c_course.handle, false );
+
+				} ) ).Start();
+
+			}
 		}
 
 		#endregion
@@ -300,7 +521,6 @@ namespace Lwm.inputAssist {
 		[DataMember( IsRequired = true )]
 		public List<HotKey_Execute> key_List = new List<HotKey_Execute>();
 
-
 		/// <summary>
 		/// 鼠标辅助键 上一个 
 		/// </summary>
@@ -312,14 +532,6 @@ namespace Lwm.inputAssist {
 		/// </summary>
 		[DataMember( IsRequired = true )]
 		public HotKey_Execute next = new HotKey_Execute();
-
-		/// <summary>
-		/// 添加列表快捷键
-		/// </summary>
-		/// <param name="hotkey">热键组合</param>
-		public void Add_Key_List(HotKey_Execute hotkey) {
-			key_List.Add( hotkey );
-		}
 
 		/// <summary>
 		/// 执行匹配
@@ -338,7 +550,6 @@ namespace Lwm.inputAssist {
 					title_bool = true;
 				}
 			}
-
 			//如果要求类名匹配
 			if (setting.class_regexMatch != null) {
 				mat_class = Regex.Match( window_class, setting.class_regexMatch );
