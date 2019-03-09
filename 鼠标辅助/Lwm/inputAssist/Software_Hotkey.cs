@@ -170,7 +170,6 @@ namespace Lwm.inputAssist {
 
 			#region 导入Dll
 
-
 			/// <summary>
 			/// 模拟键盘的方法
 			/// </summary>
@@ -182,15 +181,6 @@ namespace Lwm.inputAssist {
 			private static extern void keybd_event(byte bVk, byte bScan, int dwFlags, int dwExtraInfo);
 
 			/// <summary>
-			/// 对指定的窗口设置键盘焦点。该窗口必须与调用线程的消息队列相关
-			/// </summary>
-			/// https://baike.baidu.com/item/SetFocus
-			/// <param name="hWnd">接收键盘输入的窗口指针</param>
-			/// <returns>一个布尔值；如果获得焦点成功，则为 true；如果失败，则为 false。</returns>
-			[DllImport( "user32.dll" )]
-			private static extern Boolean SetFocus(IntPtr hWnd);//设定焦点
-
-			/// <summary>
 			/// 激活指定窗口(无论是否最小化) 
 			/// 想要将最小化的窗口还原并使其在屏幕最前，只要向fAltTab参数传入TRUE就可以了。
 			/// </summary>
@@ -199,89 +189,6 @@ namespace Lwm.inputAssist {
 			/// <returns></returns>
 			[DllImport( "user32.dll" )]
 			private static extern void SwitchToThisWindow(IntPtr hWnd, Boolean fAltTab);//设定焦点
-
-			/// <summary>
-			/// 该函数获取窗口客户区的大小(桌面大小)
-			/// 需要关键字 out
-			/// </summary>
-			/// https://baike.baidu.com/item/GetWindowRect/6376447?fr=aladdin
-			/// 使用示例 GetClientRect( (IntPtr)66778, out ipRect )
-			/// <param name="hWnd">窗口句柄</param>
-			/// <param name="lpRect">是一个指针，指向一个RECT类型的rectangle结构。该结构有四个LONG字段,分别为left、top、right和bottom。GetClientRect将这四个字段设定为窗口显示区域的尺寸。left和top字段通常设定为0。right和bottom字段设定为显示区域的宽度和高度（像素点数）。 也可以是一个CRect对象指针。CRect对象有多个参数，与RECT用法相同</param>
-			/// <returns>如果函数成功，返回一个非零值。</returns>
-			[DllImport( "user32.dll" )]
-			private static extern int GetClientRect(IntPtr hWnd, out RECT lpRect);
-
-			/// <summary>
-			/// 该函数返回指定窗口的边框矩形的尺寸。该尺寸以相对于屏幕坐标左上角的屏幕坐标给出。
-			/// 需要关键字 out
-			/// </summary>
-			/// 使用示例 GetWindowRect ( (IntPtr)66778, out ipRect )
-			/// <param name="hWnd">窗口句柄</param>
-			/// <param name="lpRect">是一个指针，指向一个RECT类型的rectangle结构。该结构有四个LONG字段,分别为left、top、right和bottom。GetClientRect将这四个字段设定为窗口显示区域的尺寸。left和top字段通常设定为0。right和bottom字段设定为显示区域的宽度和高度（像素点数）。 也可以是一个CRect对象指针。CRect对象有多个参数，与RECT用法相同</param>
-			/// <returns>如果函数成功，返回一个非零值。</returns>
-			[DllImport( "user32.dll" )]
-			private static extern int GetWindowRect(IntPtr hWnd, out RECT lpRect);
-
-			/// <summary>
-			/// 鼠标模拟
-			/// </summary>
-			/// https://baike.baidu.com/item/mouse_event
-			/// <param name="dwFlags">标志位集，指定点击按钮和鼠标动作的多种情况。此参数可以是下列值的某种组合：</param>>
-			/// <param name="dx">指定鼠标沿x轴的绝对位置或者从上次鼠标事件产生以来移动的数量，依赖于MOUSEEVENTF_ABSOLUTE的设置。给出的绝对数据作为鼠标的实际X坐标；给出的相对数据作为移动的mickeys数。一个mickey表示鼠标移动的数量，表明鼠标已经移动。</param>
-			/// <param name="dy">指定鼠标沿y轴的绝对位置或者从上次鼠标事件产生以来移动的数量，依赖于MOUSEEVENTF_ABSOLUTE的设置。给出的绝对数据作为鼠标的实际y坐标，给出的相对数据作为移动的mickeys数。</param>
-			/// <param name="dwData">如果dwFlags为MOUSEEVENTF_WHEEL，则dwData指定鼠标轮移动的数量。正值表明鼠标轮向前转动，即远离用户的方向；负值表明鼠标轮向后转动，即朝向用户。一个轮击定义为WHEEL_DELTA，即120。如果dwFlagsS不是MOUSEEVENTF_WHEEL，则dWData应为零。</param>
-			/// <param name="dwExtralnfo">指定与鼠标事件相关的附加32位值。应用程序调用函数GetMessageExtraInfo来获得此附加信息。</param>
-			/// <returns></returns>
-			[DllImport( "user32.dll" )]
-			private static extern int mouse_event(byte dwFlags, int dx, int dy, byte dwData, byte dwExtralnfo);
-
-			[DllImport( "user32.dll" )]
-			private static extern uint GetWindowThreadProcessId(IntPtr hWnd, ref uint processId);
-
-			//[DllImport( "user32.dll" )]
-			//private static extern int GetGUIThreadInfo(IntPtr hWnd, ref GUITHREADINFO lpgui);
-
-			[DllImport( "user32.dll", SetLastError = true )]
-			private static extern bool GetGUIThreadInfo(uint idThread, ref GuiThreadInfo lpgui);
-
-			[DllImport( "user32.dll", SetLastError = true )]
-			private static extern int GetCaretPos(ref Point pt);
-
-			//消息发送API
-			[DllImport( "User32.dll", EntryPoint = "PostMessage" )]
-			public static extern int PostMessage(
-				IntPtr hWnd,        // 信息发往的窗口的句柄
-				int Msg,            // 消息ID
-				long wParam,         // 参数1
-				long lParam            // 参数2
-			);
-
-
-			[StructLayout( LayoutKind.Sequential )]
-			private struct GuiThreadInfo {
-				public int cbSize;
-				public int flags;
-
-				/// <summary>
-				/// 个人理解为顶级窗口
-				/// </summary>
-				public IntPtr hwndActive;
-
-				/// <summary>
-				/// 获得焦点的窗口句柄
-				/// </summary>
-				public IntPtr hwndFocus;
-				public IntPtr hwndCapture;
-				public IntPtr hwndMenuOwner;
-				public IntPtr hwndMoveSize;
-
-				/// <summary>
-				/// 插入符所在句柄
-				/// </summary>
-				public IntPtr hwndCaret;
-				public RECT rectCaret;
-			}
 
 			#endregion 导入Dll
 
@@ -297,13 +204,41 @@ namespace Lwm.inputAssist {
 			/// 过程类
 			/// </summary>
 			public class Course {
-				#region 导入DLL
 
-				[DllImport( "User32.dll" )]
-				public extern static void SetCursorPos(int x, int y);
+				#region 导入Dll
 
-				[DllImport( "user32.dll", CharSet = CharSet.Auto )]
-				public static extern bool GetCursorPos(out Point pt);
+				/// <summary>
+				/// 对指定的窗口设置键盘焦点。该窗口必须与调用线程的消息队列相关
+				/// </summary>
+				/// https://baike.baidu.com/item/SetFocus
+				/// <param name="hWnd">接收键盘输入的窗口指针</param>
+				/// <returns>一个布尔值；如果获得焦点成功，则为 true；如果失败，则为 false。</returns>
+				[DllImport( "user32.dll" )]
+				private static extern Boolean SetFocus(IntPtr hWnd);//设定焦点
+
+
+				/// <summary>
+				/// 该函数获取窗口客户区的大小(桌面大小)
+				/// 需要关键字 out
+				/// </summary>
+				/// https://baike.baidu.com/item/GetWindowRect/6376447?fr=aladdin
+				/// 使用示例 GetClientRect( (IntPtr)66778, out ipRect )
+				/// <param name="hWnd">窗口句柄</param>
+				/// <param name="lpRect">是一个指针，指向一个RECT类型的rectangle结构。该结构有四个LONG字段,分别为left、top、right和bottom。GetClientRect将这四个字段设定为窗口显示区域的尺寸。left和top字段通常设定为0。right和bottom字段设定为显示区域的宽度和高度（像素点数）。 也可以是一个CRect对象指针。CRect对象有多个参数，与RECT用法相同</param>
+				/// <returns>如果函数成功，返回一个非零值。</returns>
+				[DllImport( "user32.dll" )]
+				private static extern int GetClientRect(IntPtr hWnd, out RECT lpRect);
+
+				/// <summary>
+				/// 该函数返回指定窗口的边框矩形的尺寸。该尺寸以相对于屏幕坐标左上角的屏幕坐标给出。
+				/// 需要关键字 out
+				/// </summary>
+				/// 使用示例 GetWindowRect ( (IntPtr)66778, out ipRect )
+				/// <param name="hWnd">窗口句柄</param>
+				/// <param name="lpRect">是一个指针，指向一个RECT类型的rectangle结构。该结构有四个LONG字段,分别为left、top、right和bottom。GetClientRect将这四个字段设定为窗口显示区域的尺寸。left和top字段通常设定为0。right和bottom字段设定为显示区域的宽度和高度（像素点数）。 也可以是一个CRect对象指针。CRect对象有多个参数，与RECT用法相同</param>
+				/// <returns>如果函数成功，返回一个非零值。</returns>
+				[DllImport( "user32.dll" )]
+				private static extern int GetWindowRect(IntPtr hWnd, out RECT lpRect);
 
 				/// <summary>
 				/// 鼠标模拟
@@ -316,9 +251,57 @@ namespace Lwm.inputAssist {
 				/// <param name="dwExtralnfo">指定与鼠标事件相关的附加32位值。应用程序调用函数GetMessageExtraInfo来获得此附加信息。</param>
 				/// <returns></returns>
 				[DllImport( "user32.dll" )]
-				private static extern int mouse_event(int dwFlags, int dx, int dy, int dwData, int dwExtralnfo);
+				private static extern int mouse_event(byte dwFlags, int dx, int dy, byte dwData, byte dwExtralnfo);
+
+
+				/// <summary>
+				/// 向api发送信息
+				/// </summary>
+				/// <param name="hWnd">信息发往的窗口的句柄</param>
+				/// <param name="Msg">消息ID</param>
+				/// <param name="wParam">参数1</param>
+				/// <param name="lParam"> 参数2</param>
+				/// <returns></returns>
+				[DllImport( "User32.dll", EntryPoint = "PostMessage" )]
+				private static extern int PostMessage(IntPtr hWnd, int Msg, long wParam, long lParam);
+
+				[DllImport( "User32.dll" )]
+				private extern static void SetCursorPos(int x, int y);
+
+				[DllImport( "user32.dll", CharSet = CharSet.Auto )]
+				private static extern bool GetCursorPos(out Point pt);
+
+
+				[DllImport( "user32.dll", SetLastError = true )]
+				private static extern bool GetGUIThreadInfo(uint idThread, ref GuiThreadInfo lpgui);
+
+				[StructLayout( LayoutKind.Sequential )]
+				public struct GuiThreadInfo {
+					public int cbSize;
+					public int flags;
+
+					/// <summary>
+					/// 个人理解为顶级窗口
+					/// </summary>
+					public IntPtr hwndActive;
+
+					/// <summary>
+					/// 获得焦点的窗口句柄
+					/// </summary>
+					public IntPtr hwndFocus;
+					public IntPtr hwndCapture;
+					public IntPtr hwndMenuOwner;
+					public IntPtr hwndMoveSize;
+
+					/// <summary>
+					/// 插入符所在句柄
+					/// </summary>
+					public IntPtr hwndCaret;
+					public RECT rectCaret;
+				}
 
 				#endregion
+
 				/// <summary>
 				/// 是否已经正在执行,用于鼠标辅助键触发去除重复
 				/// </summary>
@@ -343,6 +326,18 @@ namespace Lwm.inputAssist {
 				/// 窗口类名
 				/// </summary>
 				public string className = "";
+
+				public GuiThreadInfo Lpgui {
+					get { return Get_GuiThreadInfo(); }
+
+				}
+
+				private GuiThreadInfo Get_GuiThreadInfo() {
+					GuiThreadInfo lpgui = new GuiThreadInfo();
+					lpgui.cbSize = Marshal.SizeOf( lpgui );
+					GetGUIThreadInfo( 0, ref lpgui );
+					return lpgui;
+				}
 
 				public override string ToString() {
 					return new {
@@ -369,19 +364,11 @@ namespace Lwm.inputAssist {
 				/// 清除alt状态
 				/// </summary>
 				public void Clear_Alt_State() {
-					//使用模拟点击窗口来达到效果
-					//	uint threadid = GetWindowThreadProcessId( (IntPtr)3999924, ref processId );
-					GuiThreadInfo lpgui = new GuiThreadInfo();
-					lpgui.cbSize = Marshal.SizeOf( lpgui );
-					GetGUIThreadInfo( 0, ref lpgui );
-
-					//GetWindowRect( this.handle, out ipRect );
-					//SwitchToThisWindow( (IntPtr)394880, false );//激活窗口
 
 					//模拟点击
-					PostMessage( lpgui.hwndActive, 513, 1, MAKELONG( 50, 5 ) );
-					PostMessage( lpgui.hwndActive, 512, 1, MAKELONG( 50, 5 ) );
+					PostMessage( Lpgui.hwndActive, 513, 1, MAKELONG( 50, 5 ) );
 					System.Threading.Thread.Sleep( 10 );
+					PostMessage( Lpgui.hwndActive, 512, 1, MAKELONG( 50, 5 ) );
 				}
 
 				private long MAKELONG(short x, short y) {
@@ -491,8 +478,14 @@ namespace Lwm.inputAssist {
 				//我们需要开一个新线程来执行,避免执行下面这句的时候 Alt 按键还是按着的
 				new Thread( new ThreadStart( () => {
 
+					new Thread( new ThreadStart( () => {
+						System.Threading.Thread.Sleep( 10 );
+						SwitchToThisWindow( c_course.Lpgui.hwndActive, true );//设置焦点
+						System.Threading.Thread.Sleep( 10 );
+						c_course.Clear_Alt_State();//解除Alt状态
+
+					} ) ).Start();
 					System.Threading.Thread.Sleep( 10 );
-					c_course.Clear_Alt_State();
 					Execute_Dowm( 0 );//按下
 					Execute_Up( 0 );//弹起
 					System.Threading.Thread.Sleep( 10 );
@@ -500,7 +493,7 @@ namespace Lwm.inputAssist {
 					Execute_Up( 1 );//弹起第二按键
 
 					c_course.Reinit();//重新初始化
-					SwitchToThisWindow( c_course.handle, false );
+					SwitchToThisWindow( c_course.Lpgui.hwndActive, true );//设置焦点
 
 				} ) ).Start();
 

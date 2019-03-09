@@ -17,8 +17,6 @@ using Lwm.Forms;
 using Lwm.Win32API;
 
 
-
-
 namespace App {
 
 	partial class Form_inputHook : Form {
